@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <title>CS 353 Group 22</title>
+</head>
+<style>
+    p.justify {
+        text-align: justify; 
+        text-justify: inter-word;
+    }
+
+</style>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="proposal.html">Project Proposal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled">Project Design</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled">Final Report</a>
+                </li>
+            </ul>
+            <a class="nav-link text-$cyan-200 alert-link" href="https://github.com/ayberkyasa/biPixel">Github Page</a>
+        </div>
+    </nav>
+
+    <main role="main" class="container mt-5">
+        <div class="row justify-content-between">
+            <h2 class="d-flex justify-content-between mt-5">
+                <span>Project Proposal</span>
+                <a class="pdf-link" href="docs/Proposal.pdf"><i class="bi bi-file-earmark-arrow-down-fill"></i></a>
+            </h2>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3>1. Introduction</h3>
+                <p class="justify">The aim of this project is to create a web-based database application that will serve as a movie rental system. This system will be an online platform that will offer its users various numbers of movies to rent, watch, review and more. It will consist of two types of main users: customers and employees. Users will be able to rent the movies that are already registered to the system. They will be given the opportunity to search for a specific movie by entering its title, director, genre, etc. The feature of rating and reviewing movies will help other users during the process of choosing movies whereas the feature of recommending movies to added friends will guarantee an enjoyable time while using this system. Customers will have the chance to demand for the movies that the system lacks and employees will be able to add the requested movies to the system. Employees will also be able to delete the accounts of desired customers from the system. Overall, the purpose of this movie rental system is to facilitate renting and watching movies online by using the optimal database design. In this report, this movie rental system is evaluated in terms of its functional requirements, non-functional requirements and limitations along with the explanation for the reasons behind using a database and the ER Diagram of the system.
+                </p>
+                <h3>2. Why/How A Database Is Going To Be Used As A Part Of The System</h3>
+                <p class="justify">A <strong>database-management system (DBMS)</strong> is a collection of interrelated data and a set of programs to access that data [1]. As described above, our application consists of a system that lets users access a large collection of movies. In order to keep track of these data about movies and user information, and provide a smooth rental experience to users, we need an appropriate database management system. This system we are planning to design will store all the information about movies available to rent, requested movies, ratings and reviews, rental records, registered users’ account information and many more. Tables and the relationships established between these tables in our database schema will pave the way for a simpler design, therefore a more efficient application. The system will be used as a tool to allow the users to access and manipulate this data under the limitations described below in this report.</p>  
+                
+                <h3>3. Requirements</h3>
+                <h4>3.1 Functional Requirements</h4>
+                <h5>3.1.1 User</h5>
+                <p class="justify">
+                    <ul>
+                        <li>Users can search the movies by title, director, genre, production year, rating, actor, the number of reviews, the number of recommendations.</li>
+                        <li>Users can withdraw a movie that they have already rented.</li>
+                        <li>Users can write reviews and rate a movie.</li>
+                        <li>Users can add friends and recommend movies to them.</li>
+                        <li>Users can see previously rented movies, currently rented movies, movie ratings, reviews, and the movies that their friends suggest.</li>
+                        <li>Users can see their friends’ previously rented movies, currently rented movies, movie ratings, reviews, and the movies that their friends’ friends suggest.</li>
+                        <li>Users can add a movie to their favorite lists.</li>
+                        <li>Users can remove a movie from their favorite lists.</li>
+                    </ul>
+                </p>
+
+                <h5>3.1.2 Employee</h5>
+                <p class="justify">
+                    <ul>
+                        <li>Employees can add a new movie to the system.</li>
+                        <li>Employees can delete an existing movie to the system.</li>
+                        <li>Employees can delete an existing customer account.</li>
+                        <li>Employees can rent a movie from the system for free.</li>
+                        <li>Employees can renew the rental period for free.</li>
+                    </ul>
+                </p>
+
+                <h5>3.1.2 Customer</h5>
+                <p class="justify">
+                    <ul>
+                        <li>Customers can request an absent movie.</li>
+                        <li>Customers can rent a movie from the system by paying a fee.</li>
+                        <li>Customers can renew the rental period for free at the first time, and they can renew with a fee the next time.</li>
+                        <li>Customers can add an upcoming movie to the reminder.</li>
+                    </ul>
+                </p>
+
+                <h4>3.2 Non-functional Requirements</h4>
+                <h5>3.2.1 Scalability</h5>
+                <p class="justify">
+                    <ul>
+                        <li>When the daily traffic of this website, which has 30000 visitors per day, exceeds this number, the bandwidth limit of this website that is allocated to the hosting plan should not be exceeded.</li>
+                    </ul>
+                </p>
+
+                <h5>3.2.2 Usability</h5>
+                <p class="justify">
+                    <ul>
+                        <li>All pages should be reached from the navigation bar with one click.</li>
+                        <li>The name of each component in the user interface should be self-explanatory and meaningful.</li>
+                        <li>It is necessary to be coherent in the layout and follow the Template Method design pattern.</li>
+                        <li>Except for pop-ups, none of the screens must be connected to each other so that users do not have to go backward on the application.</li>
+                    </ul>
+                </p>
+
+                <h5>3.2.3 Security</h5>
+                <p class="justify">
+                    <ul>
+                        <li>Payment information of the users should be secured by encryption.</li>
+                        <li>Username of the users should be unique.</li>
+                    </ul>
+                </p>
+
+                <h5>3.2.4 Robustness</h5>
+                <p class="justify">
+                    <ul>
+                        <li>The database should be designed in a way that it is able to respond to the requests from the application without any extra effort.</li>
+                        <li>When there is an error-prone input, the database system should react to it without facing any problems.</li>
+                    </ul>
+                </p>
+
+                <h5>3.2.5 Recovery</h5>
+                <p class="justify">
+                    <ul>
+                        <li>Database should be backed up regularly. Therefore, in any case of system failure, data should be saved.</li>
+                    </ul>
+                </p>
+
+                <h4>3.3 Limitations</h4>
+                <p class="justify">
+                    <ul>
+                        <li>Users can only rate and comment on the movies that they rented.</li>
+                        <li>New movies that will be registered to the system should have title, director, genre, production year, duration, language and subtitle option, price, and actors.</li>
+                        <li>A movie can be registered to the system once.</li>
+                        <li>Customers can request at most 5 movies daily.</li>
+                        <li>Customers can rent a movie for at most 7 days.</li>
+                        <li>Customers must pay a fine for an overdue movie before renting a new movie.</li>
+                    </ul>
+                </p>
+
+                <h3>4. E-R Diagram of the Movie Rental System</h3>
+                <p class="justify">The diagram shown below is the conceptual database entity-relationship diagram of our online movie rental system. It represents the binary and ternary relationships between weak or strong entity sets with generalizations, aggregations, and cardinality constraints in the database schema.</p>
+                <img src="docs/proposalDiagram.jpeg" class="img-fluid">
+            </div>
+        </div>
+    </main>
+</body>
+</html>

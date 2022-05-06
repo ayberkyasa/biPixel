@@ -1,0 +1,46 @@
+/* eslint-disable */
+import axios from "axios";
+
+const BASE_URL = "http://localhost:8081/";
+
+const CONTENT_TYPE = "application/json";
+const ACCEPTS = "application/json";
+
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": CONTENT_TYPE,
+  },
+});
+
+axiosInstance.defaults.headers.post["Content-Type"] = CONTENT_TYPE;
+axiosInstance.defaults.headers.post.Accepts = ACCEPTS;
+
+export default axiosInstance;
+
+export const URL = {
+    LOGIN: "login",
+    REGISTER: "register",
+    ADD_MOVIE: "add-movie",
+    REMOVE_MOVIE: "remove-movie",
+    DELETE_CUSTOMER: "delete-customer",
+    GET_ALL_CUSTOMERS: "get-all-customers",
+    REQUEST_MOVIE: "request-movie",
+    SEARCH_MOVIE: "search-movie",
+    RENT: "rent",
+    RENEW: "renew",
+    GET_ALL_RENTED_MOVIES: "list-all-rented-movies",
+    WITHDRAW: "withdraw",
+    ADD_FRIEND: "add-friend",
+    DELETE_FRIEND: "delete-friend",
+    GET_FRIENDS: "show-friends",
+    RECOMMEND_MOVIE: "recommend-movie",
+    GET_RECOMMENDED_MOVIES: "get-recommended-movies",
+    ADD_FAVORITE: "add-favorite",
+    DELETE_FAVORITE: "delete-favorite",
+    GET_FAVORITE_LIST: "get-favorite-list",
+    SEND_REVIEW: "write-review",
+    SEND_RATE: "rate",
+    GET_MOVIE_HISTORY: "show-movie-history",
+    GET_CURRENT_MOVIES: "show-current-movies",
+};

@@ -17,17 +17,21 @@ public class Connector {
     private String password;
     private String databaseName;
 
+    private String databaseURL;
+
     public Connector(@Value("${connector.driver}") String driver,
                      @Value("${connector.username}") String username,
                      @Value("${connector.password}") String password,
-                     @Value("${connector.databaseName}") String databaseName) {
+                     @Value("${connector.databaseName}") String databaseName,
+                     @Value("${connector.databaseURL}") String databaseURL) {
         try {
             this.driver = driver;
             this.username = username;
             this.password = password;
             this.databaseName = databaseName;
+            this.databaseURL = databaseURL;
             Class.forName(driver);
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + databaseName, username, password);
+            connection = DriverManager.getConnection(databaseURL + databaseName, username, password);
         } catch (Exception e) {
             e.printStackTrace();
         }

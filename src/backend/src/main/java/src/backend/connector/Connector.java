@@ -27,7 +27,7 @@ public class Connector {
             this.password = password;
             this.databaseName = databaseName;
             Class.forName(driver);
-            connection = DriverManager.getConnection("jdbc:mysql://dijkstra.ug.bcc.bilkent.edu.tr/" + databaseName, username, password);
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + databaseName, username, password);
         } catch (Exception e) {
             e.printStackTrace();
         }

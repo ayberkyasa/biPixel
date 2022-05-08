@@ -185,14 +185,14 @@ export default {
     };
   },
   methods: {
-    checkAuthentication() {
+    async checkAuthentication() {
       try {
-        const response = axiosInstance.post(URL.LOGIN, this.authentication);
-        this.$router.push("/profile");
+        const response = await axiosInstance.post(URL.LOGIN, this.authentication);
         this.$store.commit("logIn", {
           id: response.data.id,
           userType: response.data.userType,
         });
+        this.$router.push("/profile");
       } catch (exception) {
         this.text = "Email or password is incorrect. Please try again!";
         this.snackbar = true;

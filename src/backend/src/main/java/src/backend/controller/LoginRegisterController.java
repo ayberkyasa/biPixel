@@ -57,28 +57,35 @@ public class LoginRegisterController {
             response.put("message", "User does not exist");
         }
 
-        String userQuery = "";
-        if(requestBody.get("middle_name") == null){
-             userQuery = "INSERT INTO user (first_name, middle_name, last_name, birth_date, email, password) " +
-                    "VALUES (" +
-                    "'" + requestBody.get("first_name") + "'" + "," +
-                    requestBody.get("middle_name") + "," +
-                    "'" + requestBody.get("last_name") + "'" + "," +
-                    "'" + requestBody.get("birth_date") + "'" + "," +
-                    "'" + requestBody.get("email") + "'" + "," +
-                    requestBody.get("password") +
-                    ");";
-        }else {
-            userQuery = "INSERT INTO user (first_name, middle_name, last_name, birth_date, email, password) " +
-                    "VALUES (" +
-                    "'" + requestBody.get("first_name") + "'" + "," +
-                    "'" + requestBody.get("middle_name") + "'" + "," +
-                    "'" + requestBody.get("last_name") + "'" + "," +
-                    "'" + requestBody.get("birth_date") + "'" + "," +
-                    "'" + requestBody.get("email") + "'" + "," +
-                    requestBody.get("password") +
-                    ");";
-        }
+        String userQuery = "INSERT INTO user (full_name, birth_date, email, password) " +
+                "VALUES (" +
+                "'" + requestBody.get("fullName") + "'" + "," +
+                "'" + requestBody.get("birthDate") + "'" + "," +
+                "'" + requestBody.get("email") + "'" + "," +
+                Integer.parseInt((String) requestBody.get("password")) +
+                ");";
+
+//        if(requestBody.get("middle_name") == null){
+//             userQuery = "INSERT INTO user (first_name, middle_name, last_name, birth_date, email, password) " +
+//                    "VALUES (" +
+//                    "'" + requestBody.get("first_name") + "'" + "," +
+//                    requestBody.get("middle_name") + "," +
+//                    "'" + requestBody.get("last_name") + "'" + "," +
+//                    "'" + requestBody.get("birth_date") + "'" + "," +
+//                    "'" + requestBody.get("email") + "'" + "," +
+//                    Integer.parseInt((String) requestBody.get("password")) +
+//                    ");";
+//        }else {
+//            userQuery = "INSERT INTO user (first_name, middle_name, last_name, birth_date, email, password) " +
+//                    "VALUES (" +
+//                    "'" + requestBody.get("first_name") + "'" + "," +
+//                    "'" + requestBody.get("middle_name") + "'" + "," +
+//                    "'" + requestBody.get("last_name") + "'" + "," +
+//                    "'" + requestBody.get("birth_date") + "'" + "," +
+//                    "'" + requestBody.get("email") + "'" + "," +
+//                    Integer.parseInt((String) requestBody.get("password")) +
+//                    ");";
+//        }
 
         connector.executeUpdate(userQuery);
 

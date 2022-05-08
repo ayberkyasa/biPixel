@@ -28,7 +28,7 @@
         >
           <template v-slot:[`item.request`]="{ item }">
             <v-btn
-              color="green lighten-1"
+              color="green darken-1"
               rounded
               small
               dark
@@ -48,7 +48,7 @@
         >
           <template v-slot:[`item.request`]="{ item }">
             <v-btn
-              color="red lighten-1"
+              color="red darken-1"
               rounded
               small
               dark
@@ -78,7 +78,7 @@
         >
           <template v-slot:[`item.accept`]="{ item }">
             <v-btn
-              color="green lighten-1"
+              color="green darken-1"
               rounded
               small
               dark
@@ -88,7 +88,7 @@
           </template>
           <template v-slot:[`item.reject`]="{ item }">
             <v-btn
-              color="red lighten-1"
+              color="red darken-1"
               rounded
               small
               dark

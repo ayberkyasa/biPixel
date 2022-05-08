@@ -88,7 +88,7 @@ public class EmployeeController {
     @GetMapping("/get-all-customers")
     public ResponseEntity<List<HashMap<String, Object>>> getAllCustomers() {
         // TODO: return all customers
-        String customerQuery = "SELECT * FROM customer;";
+        String customerQuery = "SELECT * FROM user WHERE user_id in (SELECT user_id FROM customer);";
         List<HashMap<String, Object>> customerList = connector.executeQuery(customerQuery);
         return new ResponseEntity<>(customerList, HttpStatus.OK);
     }

@@ -9,14 +9,14 @@
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title class="text-center" style="font-size: 28px">
-              Full Name
+              {{ fullName }}
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
         <v-divider></v-divider>
 
-        <div v-if="this.$store.state.userType === 'customer'">
+        <div v-if="this.$store.state.userType === 'Customer'">
           <router-link
             v-for="item in customerListItems"
             :key="item.title"
@@ -70,9 +70,11 @@
 </template>
 
 <script>
+import axiosInstance, { URL } from "../services/axiosConfig.js";
 export default {
   data() {
     return {
+      fullName: "",
       customerListItems: [
         { title: "Profile", icon: "mdi-account", path: "/profile" },
         { title: "Social", icon: "mdi-magnify", path: "/social" },
@@ -110,9 +112,24 @@ export default {
   },
   methods: {
     logout() {
-      this.$router.push("/");
       this.$store.commit("logOut");
+      this.$router.push("/");
     },
+    async getFullName() {
+      try {
+        const response = await axiosInstance.get(URL.GET_USER, {
+          params: {
+            id: this.$store.state.uid,
+          },
+        });
+        this.fullName = response.data.full_name;
+      } catch (exception) {
+        this.fullName = "";
+      }
+    },
+  },
+  mounted() {
+    this.getFullName();
   },
 };
 </script>

@@ -1,6 +1,8 @@
 package src.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import src.backend.connector.Connector;
 
@@ -14,6 +16,13 @@ public class AccountController {
     @Autowired
     public AccountController(Connector connector) {
         this.connector = connector;
+    }
+
+    @GetMapping("/get-user")
+    public ResponseEntity<HashMap<String, Object>> getUser(@RequestParam("id") Integer id) {
+        HashMap<String, Object> response = new HashMap<>();
+        response = connector.executeQuery("SELECT * FROM user WHERE user_id = " + id).get(0);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/add-friend")

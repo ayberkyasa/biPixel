@@ -19,6 +19,7 @@ export default axiosInstance;
 export const URL = {
     LOGIN: "login",
     REGISTER: "register",
+    GET_USER: "get-user",
     ADD_MOVIE: "add-movie",
     REMOVE_MOVIE: "remove-movie",
     DELETE_CUSTOMER: "delete-customer",
@@ -32,6 +33,8 @@ export const URL = {
     ADD_FRIEND: "add-friend",
     DELETE_FRIEND: "delete-friend",
     GET_FRIENDS: "show-friends",
+    GET_NON_FRIENDS: "show-non-friends",
+    GET_PENDING_FRIENDS: "show-pending-friends",
     RECOMMEND_MOVIE: "recommend-movie",
     GET_RECOMMENDED_MOVIES: "get-recommended-movies",
     ADD_FAVORITE: "add-favorite",

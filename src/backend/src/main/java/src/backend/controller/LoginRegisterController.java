@@ -65,28 +65,6 @@ public class LoginRegisterController {
                 "'" + requestBody.get("password") + "'" +
                 ");";
 
-//        if(requestBody.get("middle_name") == null){
-//             userQuery = "INSERT INTO user (first_name, middle_name, last_name, birth_date, email, password) " +
-//                    "VALUES (" +
-//                    "'" + requestBody.get("first_name") + "'" + "," +
-//                    requestBody.get("middle_name") + "," +
-//                    "'" + requestBody.get("last_name") + "'" + "," +
-//                    "'" + requestBody.get("birth_date") + "'" + "," +
-//                    "'" + requestBody.get("email") + "'" + "," +
-//                    Integer.parseInt((String) requestBody.get("password")) +
-//                    ");";
-//        }else {
-//            userQuery = "INSERT INTO user (first_name, middle_name, last_name, birth_date, email, password) " +
-//                    "VALUES (" +
-//                    "'" + requestBody.get("first_name") + "'" + "," +
-//                    "'" + requestBody.get("middle_name") + "'" + "," +
-//                    "'" + requestBody.get("last_name") + "'" + "," +
-//                    "'" + requestBody.get("birth_date") + "'" + "," +
-//                    "'" + requestBody.get("email") + "'" + "," +
-//                    Integer.parseInt((String) requestBody.get("password")) +
-//                    ");";
-//        }
-
         connector.executeUpdate(userQuery);
 
         String getUserQuery = "SELECT * FROM user WHERE email = '" + requestBody.get("email") + "';";

@@ -20,12 +20,26 @@ public class LoginRegisterController {
     }
 
     @PostMapping("/login")
-    public List<HashMap<String, Object>> login(@RequestBody HashMap<String, Object> requestBody) {
-        try {
-            return connector.executeQuery("SELECT * FROM student WHERE sid = " + requestBody.get("id") + " and sname = '" + requestBody.get("name") + "'");
-        } catch (Exception e) {
-            return null;
+    public ResponseEntity<HashMap<String, Object>> login(@RequestBody HashMap<String, Object> requestBody) {
+        HashMap<String, Object> response = new HashMap<>();
+        String loginQuery = "SELECT * FROM user " +
+                "WHERE email = '" + requestBody.get("email") + "' " + "and password = " + requestBody.get("password") + ";";
+
+        List<HashMap<String, Object>> user = connector.executeQuery(loginQuery);
+        if(!user.isEmpty()){
+            Integer userId = (Integer) user.get(0).get("user_id");
+            response.put("id", userId);
+            String empQuery = "SELECT * FROM employee " +
+                    "WHERE user_id = " + userId + ";";
+            List<HashMap<String, Object>> emp = connector.executeQuery(empQuery);
+            if(!emp.isEmpty()){
+                response.put("userType", "Employee");
+            }else{
+                response.put("userType", "Customer");
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/register")

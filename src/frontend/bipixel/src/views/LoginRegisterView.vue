@@ -187,7 +187,10 @@ export default {
   methods: {
     async checkAuthentication() {
       try {
-        const response = await axiosInstance.post(URL.LOGIN, this.authentication);
+        const response = await axiosInstance.post(
+          URL.LOGIN,
+          this.authentication
+        );
         this.$store.commit("logIn", {
           id: response.data.id,
           userType: response.data.userType,
@@ -200,9 +203,9 @@ export default {
     },
     async register() {
       try {
-        await this.checkInputValidation();
+        this.checkInputValidation();
         try {
-          axiosInstance.post(URL.REGISTER, this.registeration);
+          await axiosInstance.post(URL.REGISTER, this.registeration);
           this.step--;
         } catch (exception) {
           this.text = exception.response.data.message;

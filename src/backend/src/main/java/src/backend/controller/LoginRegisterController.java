@@ -23,7 +23,7 @@ public class LoginRegisterController {
     public ResponseEntity<HashMap<String, Object>> login(@RequestBody HashMap<String, Object> requestBody) {
         HashMap<String, Object> response = new HashMap<>();
         String loginQuery = "SELECT * FROM user " +
-                "WHERE email = '" + requestBody.get("email") + "' " + "and password = " + Integer.parseInt((String) requestBody.get("password")) + ";";
+                "WHERE email = '" + requestBody.get("email") + "' " + "and password = '" + requestBody.get("password") + "';";
 
         List<HashMap<String, Object>> user = connector.executeQuery(loginQuery);
         if(!user.isEmpty()){
@@ -62,7 +62,7 @@ public class LoginRegisterController {
                 "'" + requestBody.get("fullName") + "'" + "," +
                 "'" + requestBody.get("birthDate") + "'" + "," +
                 "'" + requestBody.get("email") + "'" + "," +
-                Integer.parseInt((String) requestBody.get("password")) +
+                "'" + requestBody.get("password") + "'" +
                 ");";
 
 //        if(requestBody.get("middle_name") == null){

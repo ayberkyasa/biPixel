@@ -218,10 +218,10 @@ export default {
     },
     checkInputValidation() {
       if (
-        this.registeration.email.trim().isEmpty() ||
-        this.registeration.password.trim().isEmpty() ||
-        this.registeration.fullName.trim().isEmpty() ||
-        this.registeration.birthDate.trim().isEmpty()
+        this.registeration.email.trim() === "" ||
+        this.registeration.password.trim() === "" ||
+        this.registeration.fullName.trim() === "" ||
+        this.registeration.birthDate.trim() === ""
       )
         throw "Any field cannot be blank!";
     },

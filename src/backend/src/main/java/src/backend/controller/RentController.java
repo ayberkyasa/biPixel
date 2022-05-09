@@ -21,14 +21,20 @@ public class RentController {
 
     @GetMapping("/search-movie")
     public ResponseEntity<?> searchBy(@RequestParam("key") String searchKey,
-                                                  @RequestParam("type") String searchType,
                                                   @RequestParam("userId") Integer userId) {
 
+        List<HashMap<String, Object>> movieList;
         HashMap<String, Object> result = new HashMap<>();
-        List<HashMap<String, Object>> movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
-                " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
-                " WHERE movie.movie_id NOT IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +")" +
-                " AND (title RLIKE '" + searchKey + "' OR actor_full_name RLIKE '" + searchKey + "' OR director_full_name RLIKE '" + searchKey + "')");
+        if(!searchKey.equals("")){
+            movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
+                    " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
+                    " WHERE movie.movie_id NOT IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +")" +
+                    " AND (title RLIKE '" + searchKey + "' OR actor_full_name RLIKE '" + searchKey + "' OR director_full_name RLIKE '" + searchKey + "')");
+        }else{
+            movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
+                    " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
+                    " WHERE movie.movie_id NOT IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +")");
+        }
 
         if (movieList.size() == 0) {
             result.put("result", "Movie does not exist.");
@@ -55,6 +61,10 @@ public class RentController {
         HashMap<String, Object> rating;
         HashMap<String, Object> price;
         HashMap<String, Object> movie;
+        HashMap<String, Object> duration;
+        HashMap<String, Object> language_option;
+        HashMap<String, Object> subtitle_option;
+
 
         List<HashMap<String, Object>> returned = new ArrayList<>();
 
@@ -74,6 +84,9 @@ public class RentController {
             year = connector.executeQuery("SELECT production_year FROM movie WHERE movie_id = " + mid).get(0);
             rating = connector.executeQuery("SELECT overall_rating FROM movie WHERE movie_id = " + mid).get(0);
             price = connector.executeQuery("SELECT price FROM movie WHERE movie_id = " + mid).get(0);
+            duration = connector.executeQuery("SELECT duration FROM movie WHERE movie_id = " + mid).get(0);
+            language_option = connector.executeQuery("SELECT language_option FROM movie WHERE movie_id = " + mid).get(0);
+            subtitle_option = connector.executeQuery("SELECT subtitle_option FROM movie WHERE movie_id = " + mid).get(0);
 
             for (int z = 0; z < actList.size(); z++) {
                 id = (Integer) actList.get(z).values().toArray()[0];
@@ -103,6 +116,10 @@ public class RentController {
             movie.put("actors", actorList);
             movie.put("directors", directorList);
             movie.put("genres", genreList);
+            movie.put("duration", duration.values().toArray()[0]);
+            movie.put("language_option", language_option.values().toArray()[0]);
+            movie.put("subtitle_option", subtitle_option.values().toArray()[0]);
+            movie.put("mid", mid);
 
             returned.add(movie);
         }

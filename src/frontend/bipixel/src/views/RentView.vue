@@ -17,16 +17,17 @@
           <v-chip
             v-for="el in selectElements"
             :key="el.key"
-            @click="select(el)"
+            @click="selected = el.value"
             >{{ el.value }}</v-chip
           >
         </v-chip-group>
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="1"> Select Upper Threshold of Price: </v-col>
+      <v-col cols="2"> Select Upper Threshold of Price: </v-col>
       <v-col cols="4">
         <v-text-field
+          class="mr-10"
           v-model="price"
           label="Enter a price"
           filled
@@ -34,9 +35,10 @@
           dense
         ></v-text-field>
       </v-col>
-      <v-col cols="1"> Select Lower Threshold of Rate: </v-col>
+      <v-col cols="2"> Select Lower Threshold of Rate: </v-col>
       <v-col cols="4">
         <v-text-field
+          class="mr-10"
           v-model="rate"
           label="Enter a rate between 1 and 10"
           filled
@@ -47,7 +49,7 @@
     </v-row>
     <v-data-table
       :headers="headers"
-      :items="nonFriends"
+      :items="movies"
       item-key="email"
       class="elevation-1"
       :search="search"
@@ -55,24 +57,19 @@
       <template v-slot:[`item.details`]="{ item }">
         <v-btn
           color="green lighten-1"
-          rounded
-          small
-          dark
-          @click="showDetails(item)"
+          icon
+          large
+          @click="showedMovie = item"
           @click.stop="detailsDialog = true"
-          >Details</v-btn
+          ><v-icon>mdi-information</v-icon></v-btn
         >
       </template>
       <template v-slot:[`item.addFav`]="{ item }">
-        <v-btn
-          class="mx-2"
-          fab
-          dark
-          small
-          color="pink"
-          @click="addFavourites(item)"
-        >
-          <v-icon> mdi-heart </v-icon>
+        <v-btn icon color="pink" @click="addFavorites(item)">
+          <v-icon>mdi-heart</v-icon>
+        </v-btn>
+        <v-btn icon color="blue-grey lighten-3" @click="addFavorites(item)">
+          <v-icon>mdi-heart</v-icon>
         </v-btn>
       </template>
     </v-data-table>
@@ -86,7 +83,7 @@
             <strong>Duration: </strong>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Labguage Option: </strong>
+            <strong>Language Option: </strong>
           </v-row>
           <v-row class="text-subtitle-1">
             <strong>Subtitle Option: </strong>
@@ -113,7 +110,7 @@ export default {
       price: "",
       rate: "",
       selected: "None",
-      nonFriends: [
+      movies: [
         {
           title: "Movie 1",
           director: "Director 1",
@@ -271,14 +268,14 @@ export default {
         },
         {
           text: "Details",
-          align: "start",
+          align: "center",
           value: "details",
           filterable: false,
           sortable: false,
         },
         {
-          text: "Add Favourites",
-          align: "start",
+          text: "Add Favorites",
+          align: "center",
           value: "addFav",
           filterable: false,
           sortable: false,
@@ -287,13 +284,7 @@ export default {
     },
   },
   methods: {
-    showDetails(value) {
-      this.showedMovie = value;
-    },
-    select(value) {
-      this.selected = value.value;
-    },
-    addFavourites(value) {
+    addFavorites(value) {
       console.log(value, "fav");
     },
   },

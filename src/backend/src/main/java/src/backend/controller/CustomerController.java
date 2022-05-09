@@ -42,7 +42,7 @@ public class CustomerController {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            connector.executeUpdate("INSERT INTO requested_movie(title, directors_full_name, actors_first_name, production_year, duration, genres)" +
+            connector.executeUpdate("INSERT INTO requested_movie(title, directors_full_name, actors_full_name, production_year, duration, genres)" +
                     " VALUES('" + requestBody.get("title") + "', '" + requestBody.get("directors_full_name") + "', '" + requestBody.get("actors_full_name") + "', " + requestBody.get("production_year") + "" +
                     ", " + requestBody.get("duration") + ", '" + requestBody.get("genres") + "')");
             connector.executeUpdate("INSERT INTO request(user_id, req_movie_id)" +

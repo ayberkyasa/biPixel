@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import src.backend.connector.Connector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -283,7 +284,7 @@ public class AccountController {
             }
             connector.executeUpdate("INSERT INTO favorite VALUES (" + requestBody.get("userId") + ", " + requestBody.get("movieId") + ")");
             result.put("result", "Adding a movie to favorites is successful!");
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
         catch (Exception e) {
             result.put("result", "Adding a movie to favorites failed due to an exception!");
@@ -323,17 +324,87 @@ public class AccountController {
 
     @GetMapping("/get-favorite-list")
     public ResponseEntity<?> getFavoriteList(@RequestParam("userId") Integer userId) {
+        int mid;
+        int id;
+
+        String name;
+
+        List<String> actorList;
+        List<String> directorList;
+        List<String> genreList;
+
+        List<HashMap<String, Object>> actList;
+        List<HashMap<String, Object>> directList;
+        List<HashMap<String, Object>> genList;
+
+        List<HashMap<String, Object>> nameList;
+
+        HashMap<String, Object> title;
+        HashMap<String, Object> year;
+        HashMap<String, Object> rating;
+        HashMap<String, Object> price;
+        HashMap<String, Object> movie;
+
+        List<HashMap<String, Object>> returned2 = new ArrayList<>();
+
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + userId);
-            if(returned.size() == 0) {
+            if (returned.size() == 0) {
                 HashMap<String, Object> result = new HashMap<>();
                 result.put("result", "Retrieval of favorite movies failed! User does not exist.");
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-            List<HashMap<String, Object>> favorites = connector.executeQuery("SELECT * FROM movie WHERE movie_id IN (SELECT movie_id FROM favorite WHERE user_id = " + userId + ")");
-            return new ResponseEntity<>(favorites, HttpStatus.OK);
-        }
-        catch (Exception e) {
+            List<HashMap<String, Object>> favorites = connector.executeQuery("SELECT movie_id FROM favorite WHERE user_id = " + userId);
+            for (int i = 0; i < favorites.size(); i++) {
+                mid = (Integer) favorites.get(i).values().toArray()[0];
+                actList = connector.executeQuery("SELECT actor_id FROM act WHERE movie_id = " + mid);
+                directList = connector.executeQuery("SELECT director_id FROM direct WHERE movie_id = " + mid);
+                genList = connector.executeQuery("SELECT genre_id FROM movie_genre WHERE movie_id = " + mid);
+
+                actorList = new ArrayList<String>();
+                directorList = new ArrayList<String>();
+                genreList = new ArrayList<String>();
+
+                movie = new HashMap<>();
+
+                title = connector.executeQuery("SELECT title FROM movie WHERE movie_id = " + mid).get(0);
+                year = connector.executeQuery("SELECT production_year FROM movie WHERE movie_id = " + mid).get(0);
+                rating = connector.executeQuery("SELECT overall_rating FROM movie WHERE movie_id = " + mid).get(0);
+                price = connector.executeQuery("SELECT price FROM movie WHERE movie_id = " + mid).get(0);
+
+                for (int z = 0; z < actList.size(); z++) {
+                    id = (Integer) actList.get(z).values().toArray()[0];
+                    nameList = connector.executeQuery("SELECT actor_full_name FROM actor WHERE actor_id = " + id);
+                    name = (String) nameList.get(0).values().toArray()[0];
+                    actorList.add(name);
+                }
+
+                for (int z = 0; z < directList.size(); z++) {
+                    id = (Integer) directList.get(z).values().toArray()[0];
+                    nameList = connector.executeQuery("SELECT director_full_name FROM director WHERE director_id = " + id);
+                    name = (String) nameList.get(0).values().toArray()[0];
+                    directorList.add(name);
+                }
+
+                for (int z = 0; z < genList.size(); z++) {
+                    id = (Integer) genList.get(z).values().toArray()[0];
+                    nameList = connector.executeQuery("SELECT genre_name FROM genre WHERE genre_id = " + id);
+                    name = (String) nameList.get(0).values().toArray()[0];
+                    genreList.add(name);
+                }
+
+                movie.put("title", title.values().toArray()[0]);
+                movie.put("production_year", year.values().toArray()[0]);
+                movie.put("overall_rating", rating.values().toArray()[0]);
+                movie.put("price", price.values().toArray()[0]);
+                movie.put("actors", actorList);
+                movie.put("directors", directorList);
+                movie.put("genres", genreList);
+
+                returned2.add(movie);
+            }
+            return new ResponseEntity<>(returned2, HttpStatus.OK);
+        } catch (Exception e) {
             HashMap<String, Object> result = new HashMap<>();
             result.put("result", "Retrieval of favorite movies failed due to an exception!");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);

@@ -34,16 +34,16 @@ public class CustomerController {
         }
         else {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM requested_movie NATURAL JOIN request" +
-                    " WHERE user_id = " + requestBody.get("userId") + " AND title = '" + requestBody.get("title") + "' AND production_year = " + requestBody.get("production_year") + " " +
-                    " AND directors_full_name = '" + requestBody.get("directors_full_name") + "'");
+                    " WHERE user_id = " + requestBody.get("userId") + " AND title = '" + requestBody.get("title") + "' AND production_year = '" + requestBody.get("production_year") + "' " +
+                    " AND directors_full_name = '" + requestBody.get("directors_full_name") + "'" + " AND actors_full_name = '" + requestBody.get("actors_full_name") + "'");
 
             if (returned.size() != 0) {
                 result.put("result", "You have already made this request.");
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            connector.executeUpdate("INSERT INTO requested_movie(title, directors_full_name, actors_full_name, production_year, duration, genres)" +
-                    " VALUES('" + requestBody.get("title") + "', '" + requestBody.get("directors_full_name") + "', '" + requestBody.get("actors_full_name") + "', " + requestBody.get("production_year") + "" +
+            connector.executeUpdate("INSERT INTO requested_movie(title, production_year, directors_full_name, actors_full_name,  duration, genres)" +
+                    " VALUES('" + requestBody.get("title") + "', '" + requestBody.get("directors_full_name") + "', '" + requestBody.get("actors_full_name") + "', '" + requestBody.get("production_year") + "'" +
                     ", " + requestBody.get("duration") + ", '" + requestBody.get("genres") + "')");
             connector.executeUpdate("INSERT INTO request(user_id, req_movie_id)" +
                     " VALUES(" + requestBody.get("userId") + ", (SELECT MAX(req_movie_id) FROM requested_movie))");

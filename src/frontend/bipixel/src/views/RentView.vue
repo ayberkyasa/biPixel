@@ -65,10 +65,15 @@
         >
       </template>
       <template v-slot:[`item.addFav`]="{ item }">
-        <v-btn icon color="pink" @click="addFavorites(item)">
+        <v-btn icon color="pink" v-if="checkFav(item)">
           <v-icon>mdi-heart</v-icon>
         </v-btn>
-        <v-btn icon color="blue-grey lighten-3" @click="addFavorites(item)">
+        <v-btn
+          icon
+          color="blue-grey lighten-3"
+          v-if="!checkFav(item)"
+          @click="addFavorites(item)"
+        >
           <v-icon>mdi-heart</v-icon>
         </v-btn>
       </template>
@@ -118,6 +123,7 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      favorites: [],
       actors: "",
       showedMovie: {},
       detailsDialog: false,
@@ -241,8 +247,27 @@ export default {
     },
   },
   methods: {
-    addFavorites(value) {
-      console.log(value, "fav");
+    checkFav(item) {
+      var check = false;
+      this.favorites.forEach((elm) => {
+        if (elm.movie_id === item.mid) {
+          console.log("girdi");
+          check = true;
+        }
+      });
+      return check;
+    },
+    async addFavorites(value) {
+      try {
+        const res = await axiosInstance.post(URL.ADD_FAVORITE, {
+          movieId: value.mid,
+          userId: this.$store.state.uid,
+        });
+        console.log(res);
+        await this.getFavorites();
+      } catch (error) {
+        console.log(error);
+      }
     },
     showActors() {
       this.showedMovie.actors.forEach((item) => {
@@ -253,6 +278,18 @@ export default {
       this.showedMovie = item;
       this.showActors();
     },
+    async getFavorites() {
+      try {
+        const res = await axiosInstance.get(URL.GET_FAVORITE_LIST, {
+          params: {
+            userId: this.$store.state.uid,
+          },
+        });
+        this.favorites = res.data;
+      } catch (error) {
+        console.log("err");
+      }
+    },
   },
   async created() {
     try {
@@ -262,7 +299,7 @@ export default {
           userId: this.$store.state.uid,
         },
       });
-      console.log(res);
+      await this.getFavorites();
       this.movies = res.data;
     } catch (error) {
       console.log(error.response);

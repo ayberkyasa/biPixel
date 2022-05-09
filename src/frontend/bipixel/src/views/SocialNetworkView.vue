@@ -102,30 +102,15 @@
   </v-container>
 </template>
 <script>
+import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
       search: "",
-      nonFriends: [
-        { full_name: "ayberk", email: "ayberkyasa@gmail.com" },
-        { full_name: "fatih", email: "fatih@gmail.com" },
-        { full_name: "doğa", email: "doga@gmail.com" },
-        { full_name: "esra", email: "esra@gmail.com" },
-      ],
-      friends: [
-        { full_name: "a", email: "ayberkyasa@gmail.com" },
-        { full_name: "f", email: "fatih@gmail.com" },
-        { full_name: "d", email: "doga@gmail.com" },
-        { full_name: "e", email: "esra@gmail.com" },
-      ],
-      sentPending: [
-        { full_name: "a", email: "ayberkyasa@gmail.com" },
-        { full_name: "f", email: "fatih@gmail.com" },
-      ],
-      receivedPending: [
-        { full_name: "a", email: "ayberkyasa@gmail.com" },
-        { full_name: "f", email: "fatih@gmail.com" },
-      ],
+      nonFriends: [],
+      friends: [],
+      sentPending: [],
+      receivedPending: [],
       tab: null,
     };
   },
@@ -198,18 +183,117 @@ export default {
     },
   },
   methods: {
+    // async addFriend(item) {
+    //   try {
+    //       const res = awia
+    //   } catch (error) {
+
+    //   }
+    // },
+    async initialize() {
+      try {
+        const nonFriends = await axiosInstance.get(URL.GET_NON_FRIENDS, {
+          params: {
+            userId: this.$store.state.uid,
+          },
+        });
+        this.nonFriends = nonFriends.data;
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        const friends = await axiosInstance.get(URL.GET_FRIENDS, {
+          params: {
+            userId: this.$store.state.uid,
+          },
+        });
+        this.friends = friends.data;
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        const receiving = await axiosInstance.get(
+          URL.GET_RECEIVING_FRIEND_REQUESTS,
+          {
+            params: {
+              userId: this.$store.state.uid,
+            },
+          }
+        );
+        this.receivedPending = receiving.data;
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        const sent = await axiosInstance.get(URL.GET_SENT_FRIEND_REQUESTS, {
+          params: {
+            userId: this.$store.state.uid,
+          },
+        });
+        this.sentPending = sent.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async addFriend(item) {
-      return item;
+      try {
+        const res = await axiosInstance.post(URL.ADD_FRIEND, {
+          whoSendRequest: this.$store.state.uid,
+          whoReceiveRequest: item.user_id,
+        });
+        await this.initialize();
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
     },
     async removeFriend(item) {
+      try {
+        const res = await axiosInstance.delete(URL.DELETE_FRIEND, {
+          data: {
+            whoDelete: this.$store.state.uid,
+            whoIsDeleted: item.user_id,
+          },
+        });
+        console.log(res);
+        await this.initialize();
+      } catch (error) {
+        console.log(error);
+      }
       return item;
     },
     async acceptRequest(item) {
-      return item;
+      try {
+        const res = await axiosInstance.post(URL.ANSWER_REQUESTS, {
+          requestId: "true",
+          whoSendRequest: item.user_id,
+          whoAnswerRequest: this.$store.state.uid,
+        });
+        console.log(res);
+        await this.initialize();
+      } catch (error) {
+        console.log(error);
+      }
     },
     async rejectRequest(item) {
-      return item;
+      try {
+        const res = await axiosInstance.post(URL.ANSWER_REQUESTS, {
+          requestId: "false",
+          whoSendRequest: item.user_id,
+          whoAnswerRequest: this.$store.state.uid,
+        });
+        console.log(res);
+        await this.initialize();
+      } catch (error) {
+        console.log(error);
+      }
     },
+  },
+  async created() {
+    await this.initialize();
   },
 };
 </script>

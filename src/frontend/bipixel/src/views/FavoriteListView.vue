@@ -115,14 +115,14 @@ export default {
         },
         {
           text: "Details",
-          align: "start",
+          align: "center",
           value: "details",
           filterable: false,
           sortable: false,
         },
         {
           text: "Remove Favourites",
-          align: "start",
+          align: "center",
           value: "remFav",
           filterable: false,
           sortable: false,

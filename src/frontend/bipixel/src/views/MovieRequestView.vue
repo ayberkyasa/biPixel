@@ -8,7 +8,7 @@
         <v-icon large class="red--text text--lighten-2 mr-2"
           >mdi-alert-circle-outline</v-icon
         ><span
-          >Directors, Actors, and Genre fields are multivalued so you can enter
+          >Directors, Actors, and Genres fields are multivalued so you can enter
           multi values separated with commas in these fields.</span
         >
       </p></v-row
@@ -62,7 +62,7 @@
         ></v-text-field>
         <v-text-field
           @blur="processGenre"
-          label="Genre"
+          label="Genres"
           outlined
           dense
           rounded
@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
@@ -89,11 +90,11 @@ export default {
       snackbar: false,
       request: {
         title: "",
-        directors_full_name: [],
-        actors_full_name: [],
-        production_year: "",
+        directors_full_name: "",
+        actors_full_name: "",
+        production_year: null,
         duration: null,
-        genre: [],
+        genres: "",
       },
       rules: {
         required: (value) => !!value || "Required!",
@@ -108,7 +109,8 @@ export default {
           .split(",")
           .map((value) => {
             return value.trim();
-          });
+          })
+          .toString();
       }
     },
     processDirectors(e) {
@@ -118,19 +120,32 @@ export default {
           .split(",")
           .map((value) => {
             return value.trim();
-          });
+          })
+          .toString();
       }
     },
     processGenre(e) {
-      if (e.target.value == "") this.request.genre = [];
+      if (e.target.value == "") this.request.genres = [];
       else {
-        this.request.genre = e.target.value.split(",").map((value) => {
-          return value.trim();
-        });
+        this.request.genres = e.target.value
+          .split(",")
+          .map((value) => {
+            return value.trim();
+          })
+          .toString();
       }
     },
-    print() {
-      console.log(this.request);
+    async requestMovie() {
+      try {
+        this.request.duration = parseInt(this.request.duration);
+        const res = await axiosInstance.post(URL.REQUEST_MOVIE, {
+          ...this.request,
+          userId: this.$store.state.uid,
+        });
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

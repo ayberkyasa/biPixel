@@ -185,8 +185,8 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/show-coming-friend-requests")
-    public ResponseEntity<?> showComingFriendRequests(@RequestParam("userId") Integer userId) {
+    @GetMapping("/show-sent-friend-requests")
+    public ResponseEntity<?> showSentFriendRequests(@RequestParam("userId") Integer userId) {
         // TODO: Return list of all users who received a friend request from the user specified by "userId"
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + userId);

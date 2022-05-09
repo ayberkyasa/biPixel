@@ -1,6 +1,8 @@
 package src.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import src.backend.connector.Connector;
 
@@ -40,17 +42,44 @@ public class RentController {
     }
 
     @PostMapping("/rent")
-    public HashMap<String, Object> rentMovie(@RequestBody HashMap<String, Object> requestBody) {
+    public ResponseEntity<HashMap<String, Object>> rentMovie(@RequestBody HashMap<String, Object> requestBody) {
         // TODO: From RequestBody, movieId and userId will come.
         // TODO: If userId exists in Employee table, there is no fee. Otherwise, there is fee.
-        return null;
+
+        HashMap<String, Object> result = new HashMap<>();
+        try {
+            connector.executeUpdate("INSERT INTO rent (rent_date, due_date, last_renew_date, renew_times)" +
+                    " VALUES (CURRENT_DATE(), DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY), CURRENT_DATE(), 0)");
+            connector.executeUpdate("INSERT INTO rent_movie (movie_id, rent_id, user_id, withdrawn)" +
+                    " VALUES (" + requestBody.get("movieId") + ", (SELECT MAX(rent_id) from rent), " + requestBody.get("userId") + ", 0)");
+
+            result.put("result", "The movie is rented.");
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } catch (Exception e) {
+            result.put("result", "Failure due to exception.");
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("renew")
-    public HashMap<String, Object> renewMovie(@RequestBody HashMap<String, Object> requestBody) {
+    public ResponseEntity<HashMap<String, Object>> renewMovie(@RequestBody HashMap<String, Object> requestBody) {
         // TODO: From RequestBody, movieId and userId will come.
         // TODO: If userId exists in Employee table, there is no fee. Otherwise, there is fee.
-        return null;
+
+        HashMap<String, Object> result = new HashMap<>();
+        try {
+            connector.executeUpdate("UPDATE rent" +
+                    " SET last_renew_date = CURRENT_DATE(), due_date = date_add(CURRENT_DATE(), INTERVAL 7 DAY), renew_times = renew_times + 1" +
+                    " WHERE rent_id = " + requestBody.get("rentId"));
+
+            result.put("result", "The movie is renewed.");
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } catch (Exception e) {
+            result.put("result", "Failure due to exception.");
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
     }
 
 

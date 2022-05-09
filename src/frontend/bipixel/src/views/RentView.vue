@@ -59,7 +59,7 @@
           color="green lighten-1"
           icon
           large
-          @click="showedMovie = item"
+          @click="openDialog(item)"
           @click.stop="detailsDialog = true"
           ><v-icon>mdi-information</v-icon></v-btn
         >
@@ -90,13 +90,16 @@
 
         <v-card-text class="pl-9">
           <v-row class="text-subtitle-1">
-            <strong>Duration: </strong>
+            <strong>Duration: {{ showedMovie.duration }} (min)</strong>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Language Option: </strong>
+            <strong>Language Option: {{ showedMovie.language_option }}</strong>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Subtitle Option: </strong>
+            <strong>Subtitle Option: {{ showedMovie.subtitle_option }}</strong>
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Actors: {{ actors }}</strong>
           </v-row>
         </v-card-text>
 
@@ -115,6 +118,7 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      actors: "",
       showedMovie: {},
       detailsDialog: false,
       search: "",
@@ -239,6 +243,15 @@ export default {
   methods: {
     addFavorites(value) {
       console.log(value, "fav");
+    },
+    showActors() {
+      this.showedMovie.actors.forEach((item) => {
+        this.actors += item + ", ";
+      });
+    },
+    openDialog(item) {
+      this.showedMovie = item;
+      this.showActors();
     },
   },
   async created() {

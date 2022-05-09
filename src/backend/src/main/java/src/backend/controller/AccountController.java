@@ -313,7 +313,7 @@ public class AccountController {
             }
             connector.executeUpdate("DELETE FROM favorite WHERE user_id = " + requestBody.get("userId") + " AND movie_id = " + requestBody.get("movieId"));
             result.put("result", "Deleting a movie fom favorites is successful!");
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
         catch (Exception e) {
             result.put("result", "Deleting a movie fom favorites failed due to an exception!");

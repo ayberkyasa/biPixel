@@ -3,7 +3,7 @@
     <v-row class="display-1 font-weight-medium mb-6">Favourite List</v-row>
     <v-data-table
       :headers="headers"
-      :items="nonFriends"
+      :items="favorites"
       item-key="email"
       class="elevation-1"
     >
@@ -38,13 +38,16 @@
 
         <v-card-text class="pl-9">
           <v-row class="text-subtitle-1">
-            <strong>Duration: </strong>
+            <strong>Duration: {{ showedMovie.duration }} (min)</strong>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Labguage Option: </strong>
+            <strong>Language Option: {{ showedMovie.language_option }}</strong>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Subtitle Option: </strong>
+            <strong>Subtitle Option: {{ showedMovie.subtitle_option }}</strong>
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Actors: {{ actors }}</strong>
           </v-row>
         </v-card-text>
 
@@ -59,77 +62,14 @@
   </v-container>
 </template>
 <script>
+import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      actors: "",
       showedMovie: {},
       detailsDialog: false,
-      nonFriends: [
-        {
-          title: "Movie 1",
-          director: "Director 1",
-          genre: "Action",
-          rate: "8",
-          year: "2019",
-          price: "10",
-        },
-        {
-          title: "Movie 2",
-          director: "Director 1",
-          genre: "Comedy",
-          rate: "8.5",
-          year: "2018",
-          price: "20",
-        },
-        {
-          title: "Movie 3",
-          director: "Director 2",
-          genre: "Science Fiction",
-          rate: "7",
-          year: "2019",
-          price: "150",
-        },
-        {
-          title: "Movie 4",
-          director: "Director 3",
-          genre: "Mystery",
-          rate: "8",
-          year: "2019",
-          price: "40",
-        },
-        {
-          title: "Movie 5",
-          director: "Director 2",
-          genre: "Action",
-          rate: "8",
-          year: "2021",
-          price: "5",
-        },
-        {
-          title: "Movie 6",
-          director: "Director 4",
-          genre: "Science Fiction",
-          rate: "8",
-          year: "2019",
-          price: "80",
-        },
-        {
-          title: "Movie 7",
-          director: "Director 3",
-          genre: "Mystery",
-          rate: "8",
-          year: "2019",
-          price: "65",
-        },
-        {
-          title: "Movie 8",
-          director: "Director 4",
-          genre: "Comedy",
-          rate: "8",
-          year: "2019",
-          price: "110",
-        },
-      ],
+      favorites: [],
     };
   },
   computed: {
@@ -144,7 +84,7 @@ export default {
         {
           text: "Director",
           align: "start",
-          value: "director",
+          value: "directors",
           filterable: false,
           sortable: false,
         },
@@ -152,19 +92,19 @@ export default {
           text: "Genre",
           sortable: false,
           align: "start",
-          value: "genre",
+          value: "genres",
         },
         {
           text: "Rate",
           align: "start",
-          value: "rate",
+          value: "overall_rating",
           sortable: false,
         },
         {
           text: "Year",
           align: "start",
           filterable: false,
-          value: "year",
+          value: "production_year",
           sortable: false,
         },
         {
@@ -191,15 +131,47 @@ export default {
     },
   },
   methods: {
+    async getFavorites() {
+      try {
+        const res = await axiosInstance.get(URL.GET_FAVORITE_LIST, {
+          params: {
+            userId: this.$store.state.uid,
+          },
+        });
+        this.favorites = res.data;
+      } catch (error) {
+        console.log("err");
+      }
+    },
     showDetails(value) {
       this.showedMovie = value;
+      this.showActors();
+    },
+    showActors() {
+      this.showedMovie.actors.forEach((item) => {
+        this.actors += item + ", ";
+      });
     },
     select(value) {
       this.selected = value.value;
     },
-    remFavourites(value) {
-      console.log(value, "rem");
+    async remFavourites(value) {
+      try {
+        const res = await axiosInstance.delete(URL.DELETE_FAVORITE, {
+          data: {
+            userId: this.$store.state.uid,
+            movieId: value.movie_id,
+          },
+        });
+        console.log(res);
+        await this.getFavorites();
+      } catch (error) {
+        console.log("er");
+      }
     },
+  },
+  async created() {
+    await this.getFavorites();
   },
 };
 </script>

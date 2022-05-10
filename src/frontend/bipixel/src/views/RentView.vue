@@ -292,6 +292,9 @@ export default {
     },
   },
   async created() {
+    console.log(this.search);
+    console.log(this.$store.state.uid);
+
     try {
       const res = await axiosInstance.get(URL.SEARCH_MOVIE, {
         params: {

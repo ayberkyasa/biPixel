@@ -29,7 +29,7 @@ public class EmployeeController {
                 "'" + requestBody.get("title") + "'" + "," +
                 requestBody.get("overall_rating") + "," +
                 requestBody.get("duration") + "," +
-                requestBody.get("production_year") + "," +
+                requestBody.get("production_year") + ","  +
                 "'" + requestBody.get("language_option") + "'" + "," +
                 "'" + requestBody.get("subtitle_option") + "'" + "," +
                 requestBody.get("price") +

@@ -21,15 +21,22 @@ public class WithdrawController {
 
     @GetMapping("/list-all-rented-movies")
     public ResponseEntity<?> listAllRentedMovies(@RequestParam("key") String searchKey,
-                                                             @RequestParam("type") String searchType,
                                                              @RequestParam("userId") Integer userId) {
         // TODO: search the movies by title, director, production year, actor
         // TODO: List all rented movies of the user specified by "userId"
         HashMap<String, Object> result = new HashMap<>();
-        List<HashMap<String, Object>> movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
-                " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
-                " WHERE movie.movie_id IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +")" +
-                " AND (title RLIKE '" + searchKey + "' OR actor_full_name RLIKE '" + searchKey + "' OR director_full_name RLIKE '" + searchKey + "')");
+        List<HashMap<String, Object>> movieList;
+        if(!searchKey.equals("")){
+            movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
+                    " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
+                    " WHERE movie.movie_id IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +")" +
+                    " AND (title RLIKE '" + searchKey + "' OR actor_full_name RLIKE '" + searchKey + "' OR director_full_name RLIKE '" + searchKey + "')");
+        }else{
+            movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
+                    " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
+                    " WHERE movie.movie_id IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +")");
+        }
+
 
         if (movieList.size() == 0) {
             result.put("result", "Movie does not exist.");

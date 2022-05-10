@@ -29,12 +29,12 @@ public class WithdrawController {
         if(!searchKey.equals("")){
             movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
                     " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
-                    " WHERE movie.movie_id IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +")" +
+                    " WHERE movie.movie_id IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +" AND withdrawn = false)" +
                     " AND (title RLIKE '" + searchKey + "' OR actor_full_name RLIKE '" + searchKey + "' OR director_full_name RLIKE '" + searchKey + "')");
         }else{
             movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
                     " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
-                    " WHERE movie.movie_id IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +")");
+                    " WHERE movie.movie_id IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +" AND withdrawn = false)");
         }
 
 

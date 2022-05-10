@@ -250,6 +250,8 @@ export default {
     checkFav(item) {
       var check = false;
       this.favorites.forEach((elm) => {
+        // console.log(elm);
+        // console.log(item);
         if (elm.movie_id === item.mid) {
           console.log("girdi");
           check = true;
@@ -285,6 +287,7 @@ export default {
             userId: this.$store.state.uid,
           },
         });
+        console.log(res.data);
         this.favorites = res.data;
       } catch (error) {
         console.log("err");

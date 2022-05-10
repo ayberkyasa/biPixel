@@ -400,6 +400,7 @@ public class AccountController {
                 movie.put("actors", actorList);
                 movie.put("directors", directorList);
                 movie.put("genres", genreList);
+                movie.put("movie_id", mid);
 
                 returned2.add(movie);
             }

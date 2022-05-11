@@ -344,6 +344,11 @@ public class AccountController {
         HashMap<String, Object> rating;
         HashMap<String, Object> price;
         HashMap<String, Object> movie;
+        HashMap<String, Object> duration;
+        HashMap<String, Object> language_option;
+        HashMap<String, Object> subtitle_option;
+
+
 
         List<HashMap<String, Object>> returned2 = new ArrayList<>();
 
@@ -371,6 +376,9 @@ public class AccountController {
                 year = connector.executeQuery("SELECT production_year FROM movie WHERE movie_id = " + mid).get(0);
                 rating = connector.executeQuery("SELECT overall_rating FROM movie WHERE movie_id = " + mid).get(0);
                 price = connector.executeQuery("SELECT price FROM movie WHERE movie_id = " + mid).get(0);
+                duration = connector.executeQuery("SELECT duration FROM movie WHERE movie_id = " + mid).get(0);
+                language_option = connector.executeQuery("SELECT language_option FROM movie WHERE movie_id = " + mid).get(0);
+                subtitle_option = connector.executeQuery("SELECT subtitle_option FROM movie WHERE movie_id = " + mid).get(0);
 
                 for (int z = 0; z < actList.size(); z++) {
                     id = (Integer) actList.get(z).values().toArray()[0];
@@ -401,6 +409,9 @@ public class AccountController {
                 movie.put("directors", directorList);
                 movie.put("genres", genreList);
                 movie.put("movie_id", mid);
+                movie.put("duration", duration.values().toArray()[0]);
+                movie.put("language_option", language_option.values().toArray()[0]);
+                movie.put("subtitle_option", subtitle_option.values().toArray()[0]);
 
                 returned2.add(movie);
             }

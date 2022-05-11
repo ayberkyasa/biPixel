@@ -10,19 +10,6 @@
         dense
       ></v-text-field
     ></v-row>
-    <v-row class="align-center mb-2">
-      <v-col cols="12" sm="1" class="pl-5"> Select Category: </v-col>
-      <v-col cols="12" sm="11">
-        <v-chip-group mandatory active-class="primary--text">
-          <v-chip
-            v-for="el in selectElements"
-            :key="el.key"
-            @click="selected = el.value"
-            >{{ el.value }}</v-chip
-          >
-        </v-chip-group>
-      </v-col>
-    </v-row>
     <v-row>
       <v-col cols="2"> Select Upper Threshold of Price: </v-col>
       <v-col cols="4">
@@ -267,6 +254,7 @@ export default {
     },
   },
   async created() {
+    console.log(this.search);
     try {
       const res = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
         params: {

@@ -22,7 +22,6 @@ public class CustomerController {
 
     @PostMapping("/request-movie")
     public ResponseEntity<HashMap<String, Object>> requestMovie(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, all information about movie will come. Check ER Diagram from requested_movie table.
         HashMap<String, Object> result = new HashMap<>();
         List<HashMap<String, Object>> movieList = connector.executeQuery("SELECT * FROM movie NATURAL JOIN direct NATURAL JOIN director " +
                 "WHERE title = '" + requestBody.get("title") + "' AND production_year = " + requestBody.get("production_year") + " AND " +

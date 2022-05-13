@@ -44,7 +44,6 @@ public class LoginRegisterController {
 
     @PostMapping("/register")
     public ResponseEntity<HashMap<String, Object>> register(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: Register, check if the user already exists. Input validations will be done in frontend.
         HashMap<String, Object> response = new HashMap<>();
 
         String userCheckQuery = "SELECT * FROM user WHERE email = '" + requestBody.get("email") + "';";

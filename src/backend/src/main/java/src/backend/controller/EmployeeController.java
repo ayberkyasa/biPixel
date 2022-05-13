@@ -53,15 +53,6 @@ public class EmployeeController {
         // TODO: Delete the movie specified by "movieId"
         HashMap<String, Object> response = new HashMap<>();
 
-        String removeMovieGenreQuery = "DELETE FROM movie_genre WHERE movie_id = " + movieId + ";";
-        connector.executeUpdate(removeMovieGenreQuery);
-
-        String removeActQuery = "DELETE FROM act WHERE movie_id = " + movieId + ";";
-        connector.executeUpdate(removeActQuery);
-
-        String removeDirectQuery = "DELETE FROM direct WHERE movie_id = " + movieId + ";";
-        connector.executeUpdate(removeDirectQuery);
-
         String removeMovieQuery = "DELETE FROM movie WHERE movie_id = " + movieId + ";";
         connector.executeUpdate(removeMovieQuery);
 
@@ -73,9 +64,6 @@ public class EmployeeController {
     public ResponseEntity<HashMap<String, Object>> deleteCustomer(@RequestBody HashMap<String, Object> requestBody) {
         // TODO: From RequestBody, "userId" will come
         HashMap<String, Object> response = new HashMap<>();
-
-        String deleteCustomerQuery = "DELETE FROM customer WHERE user_id = " + requestBody.get("userId") + ";";
-        connector.executeUpdate(deleteCustomerQuery);
 
         String deleteUserQuery = "DELETE FROM user WHERE user_id = " + requestBody.get("userId") + ";";
         connector.executeUpdate(deleteUserQuery);

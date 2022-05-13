@@ -10,43 +10,6 @@
         dense
       ></v-text-field
     ></v-row>
-    <v-row class="align-center mb-2">
-      <v-col cols="12" sm="1" class="pl-5"> Select Category: </v-col>
-      <v-col cols="12" sm="11">
-        <v-chip-group mandatory active-class="primary--text">
-          <v-chip
-            v-for="el in selectElements"
-            :key="el.key"
-            @click="selected = el.value"
-            >{{ el.value }}</v-chip
-          >
-        </v-chip-group>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="2"> Select Upper Threshold of Price: </v-col>
-      <v-col cols="4">
-        <v-text-field
-          class="mr-10"
-          v-model="price"
-          label="Enter a price"
-          filled
-          rounded
-          dense
-        ></v-text-field>
-      </v-col>
-      <v-col cols="2"> Select Lower Threshold of Rate: </v-col>
-      <v-col cols="4">
-        <v-text-field
-          class="mr-10"
-          v-model="rate"
-          label="Enter a rate between 1 and 10"
-          filled
-          rounded
-          dense
-        ></v-text-field>
-      </v-col>
-    </v-row>
     <v-data-table
       :headers="headers"
       :items="movies"
@@ -92,7 +55,7 @@
     <v-row>
       <v-col cols="12" md="4" class="pr-16">
         <v-text-field
-          v-model="request.title"
+          v-model="add.title"
           label="Title"
           outlined
           dense
@@ -119,7 +82,7 @@
           class="mb-4"
         ></v-text-field>
         <v-text-field
-          v-model="request.production_year"
+          v-model="add.production_year"
           label="Year"
           outlined
           dense
@@ -128,7 +91,7 @@
           class="mb-4"
         ></v-text-field>
         <v-text-field
-          v-model="request.duration"
+          v-model="add.duration"
           label="Duration"
           outlined
           dense
@@ -147,7 +110,7 @@
       </v-col>
       <v-col cols="12" md="4" class="pr-16">
         <v-text-field
-          v-model="request.language_option"
+          v-model="add.language_option"
           label="Language"
           outlined
           dense
@@ -156,7 +119,7 @@
           class="mb-4"
         ></v-text-field>
         <v-text-field
-          v-model="request.subtitle_option"
+          v-model="add.subtitle_option"
           label="Subtitle"
           outlined
           dense
@@ -165,7 +128,7 @@
           class="mb-4"
         ></v-text-field>
         <v-text-field
-          v-model="request.price"
+          v-model="add.price"
           label="Price"
           outlined
           dense
@@ -182,7 +145,46 @@
         >
       </v-col>
     </v-row>
-
+    <v-divider class="mt-10 blue-grey darken-2"></v-divider>
+    <v-row class="display-1 font-weight-medium my-6">Manage Requests</v-row>
+    <v-data-table
+      :headers="headers2"
+      :items="requests"
+      item-key="email"
+      class="elevation-1"
+    >
+      <template v-slot:[`item.details`]="{ item }">
+        <v-btn
+          color="green lighten-1"
+          icon
+          large
+          @click="showedMovie = item"
+          @click.stop="detailsDialog = true"
+          ><v-icon>mdi-information</v-icon></v-btn
+        >
+      </template>
+      <template v-slot:[`item.accept`]="{ item }">
+        <v-btn
+          color="green darken-1"
+          rounded
+          small
+          dark
+          @click="acceptedMovie = item"
+          @click.stop="acceptDialog = true"
+          ><v-icon dark>mdi-checkbox-marked-circle</v-icon></v-btn
+        >
+      </template>
+      <template v-slot:[`item.reject`]="{ item }">
+        <v-btn
+          color="red darken-1"
+          rounded
+          small
+          dark
+          @click="rejectRequest(item)"
+          ><v-icon dark>mdi-close-circle</v-icon></v-btn
+        >
+      </template>
+    </v-data-table>
     <v-dialog v-model="detailsDialog" max-width="500">
       <v-card>
         <v-card-title class="text-h5 mb-3"> Movie Details </v-card-title>
@@ -197,11 +199,65 @@
           <v-row class="text-subtitle-1">
             <strong>Subtitle Option: </strong>
           </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Actors: </strong>
+          </v-row>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="red darken-1" text @click="detailsDialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="acceptDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h5 mb-3"> Specify Details </v-card-title>
+
+        <v-card-text class="pl-9">
+          <v-text-field
+            v-model="acceptedMovie.language_option"
+            label="Language Option"
+            outlined
+            dense
+            rounded
+            class="mb-4"
+          ></v-text-field>
+          <v-text-field
+            v-model="acceptedMovie.subtitle_option"
+            label="Subtitle Option"
+            outlined
+            dense
+            rounded
+            class="mb-4"
+          ></v-text-field>
+          <v-text-field
+            v-model="acceptedMovie.price"
+            label="Price"
+            outlined
+            dense
+            rounded
+            class="mb-4"
+          ></v-text-field>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="acceptRequest">
+            Accept
+          </v-btn>
+          <v-btn
+            color="red darken-1"
+            text
+            @click="
+              acceptDialog = false;
+              acceptedMovie.language_option = '';
+              acceptedMovie.subtitle_option = '';
+              acceptedMovie.price = '';
+            "
+          >
             Close
           </v-btn>
         </v-card-actions>
@@ -213,115 +269,27 @@
 export default {
   data() {
     return {
-      request: {
+      requests: [],
+      add: {
         title: "",
-        directors_full_name: [],
-        actors_full_name: [],
+        directors_full_name: "",
+        actors_full_name: "[]",
         production_year: "",
         duration: null,
-        genre: [],
+        genres: "",
       },
       rules: {
         required: (value) => !!value || "Required!",
       },
+      acceptedMovie: {},
+      acceptDialog: false,
       showedMovie: {},
       detailsDialog: false,
       search: "",
       price: "",
       rate: "",
       selected: "None",
-      movies: [
-        {
-          title: "Movie 1",
-          director: "Director 1",
-          genre: "Action",
-          rate: "8",
-          year: "2019",
-          price: "10",
-        },
-        {
-          title: "Movie 2",
-          director: "Director 1",
-          genre: "Comedy",
-          rate: "8.5",
-          year: "2018",
-          price: "20",
-        },
-        {
-          title: "Movie 3",
-          director: "Director 2",
-          genre: "Science Fiction",
-          rate: "7",
-          year: "2019",
-          price: "150",
-        },
-        {
-          title: "Movie 4",
-          director: "Director 3",
-          genre: "Mystery",
-          rate: "8",
-          year: "2019",
-          price: "40",
-        },
-        {
-          title: "Movie 5",
-          director: "Director 2",
-          genre: "Action",
-          rate: "8",
-          year: "2021",
-          price: "5",
-        },
-        {
-          title: "Movie 6",
-          director: "Director 4",
-          genre: "Science Fiction",
-          rate: "8",
-          year: "2019",
-          price: "80",
-        },
-        {
-          title: "Movie 7",
-          director: "Director 3",
-          genre: "Mystery",
-          rate: "8",
-          year: "2019",
-          price: "65",
-        },
-        {
-          title: "Movie 8",
-          director: "Director 4",
-          genre: "Comedy",
-          rate: "8",
-          year: "2019",
-          price: "110",
-        },
-      ],
-      selectElements: [
-        {
-          key: "none",
-          value: "None",
-        },
-        {
-          key: "action",
-          value: "Action",
-        },
-        {
-          key: "comedy",
-          value: "Comedy",
-        },
-        {
-          key: "sci_fi",
-          value: "Science Fiction",
-        },
-        {
-          key: "romance",
-          value: "Romance",
-        },
-        {
-          key: "mystery",
-          value: "Mystery",
-        },
-      ],
+      movies: [],
     };
   },
   computed: {
@@ -344,27 +312,15 @@ export default {
           text: "Genre",
           sortable: false,
           align: "start",
-          value: "genre",
-          filter: (value) => {
-            if (this.selected === "None") {
-              return true;
-            } else {
-              return value === this.selected;
-            }
-          },
+          value: "genres",
+          filterable: false,
         },
         {
           text: "Rate",
           align: "start",
           value: "rate",
           sortable: false,
-          filter: (value) => {
-            if (this.rate === "") {
-              return true;
-            } else {
-              return value >= parseInt(this.rate);
-            }
-          },
+          filterable: false,
         },
         {
           text: "Year",
@@ -378,13 +334,7 @@ export default {
           align: "start",
           value: "price",
           sortable: false,
-          filter: (value) => {
-            if (this.price === "") {
-              return true;
-            } else {
-              return value <= parseInt(this.price);
-            }
-          },
+          filterable: false,
         },
         {
           text: "Details",
@@ -402,22 +352,69 @@ export default {
         },
       ];
     },
+    headers2() {
+      return [
+        {
+          text: "Title",
+          align: "start",
+          value: "title",
+          sortable: false,
+        },
+        {
+          text: "Director",
+          align: "start",
+          value: "director",
+          sortable: false,
+        },
+        {
+          text: "Genre",
+          sortable: false,
+          align: "start",
+          value: "genres",
+        },
+        {
+          text: "Year",
+          align: "start",
+          value: "year",
+          sortable: false,
+        },
+        {
+          text: "Details",
+          align: "center",
+          value: "details",
+          filterable: false,
+          sortable: false,
+        },
+        {
+          text: "Accept",
+          align: "center",
+          value: "accept",
+          filterable: false,
+          sortable: false,
+        },
+        {
+          text: "Reject",
+          align: "center",
+          value: "reject",
+          filterable: false,
+          sortable: false,
+        },
+      ];
+    },
   },
   methods: {
     processActors(e) {
-      if (e.target.value == "") this.request.actors_full_name = [];
+      if (e.target.value == "") this.add.actors_full_name = [];
       else {
-        this.request.actors_full_name = e.target.value
-          .split(",")
-          .map((value) => {
-            return value.trim();
-          });
+        this.add.actors_full_name = e.target.value.split(",").map((value) => {
+          return value.trim();
+        });
       }
     },
     processDirectors(e) {
-      if (e.target.value == "") this.request.directors_full_name = [];
+      if (e.target.value == "") this.add.directors_full_name = [];
       else {
-        this.request.directors_full_name = e.target.value
+        this.add.directors_full_name = e.target.value
           .split(",")
           .map((value) => {
             return value.trim();
@@ -425,14 +422,23 @@ export default {
       }
     },
     processGenre(e) {
-      if (e.target.value == "") this.request.genre = [];
+      if (e.target.value == "") this.add.genres = [];
       else {
-        this.request.genre = e.target.value.split(",").map((value) => {
+        this.add.genres = e.target.value.split(",").map((value) => {
           return value.trim();
         });
       }
     },
+    deleteMovie() {},
     addMovie() {
+      return;
+    },
+    acceptRequest() {
+      console.log(this.acceptedMovie);
+      this.acceptDialog = false;
+    },
+    rejectRequest(item) {
+      console.log(item);
       return;
     },
   },

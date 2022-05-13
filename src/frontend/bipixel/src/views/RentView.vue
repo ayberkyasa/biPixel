@@ -152,8 +152,10 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="pay"> PAY </v-btn>
-          <v-btn color="red darken-1" text @click="detailsDialog = false">
+          <v-btn dark color="green darken-1" @click="pay">
+            PAY ({{ this.showedMovie.price }} TL)
+          </v-btn>
+          <v-btn dark color="red darken-1" @click="detailsDialog = false">
             CLOSE
           </v-btn>
         </v-card-actions>

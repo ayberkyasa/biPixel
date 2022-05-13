@@ -80,7 +80,7 @@
           small
           dark
           @click="showedMovie = item"
-          @click.stop="detailsDialog = true"
+          @click.stop="renew"
           >Renew</v-btn
         >
       </template>
@@ -113,6 +113,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar :color="color" timeout="2000" v-model="snackbar">
+      {{mes}}
+    </v-snackbar>
   </v-container>
 </template>
 <script>
@@ -120,6 +123,9 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      snackbar: false,
+      mes: "",
+      color: "",
       rentedMovies: [],
       actors: "",
       showedMovie: {},
@@ -243,6 +249,24 @@ export default {
     },
   },
   methods: {
+    async renew() {
+      console.log(this.showedMovie);
+      try {
+        const res = await axiosInstance.post(URL.RENEW, {
+          movieId: this.showedMovie.movie_id,
+          userId: this.$store.state.uid,
+        });
+        this.snackbar = true;
+        this.mes = res.data.result;
+        this.color = "green lighten-1";
+        console.log(res);
+      } catch (error) {
+        this.snackbar = true;
+        this.mes = "You can renew the rental period at most 3 times.";
+        this.color = "red lighten-1";
+        console.log(error);
+      }
+    },
     showActors() {
       this.showedMovie.actors.forEach((item) => {
         this.actors += item + ", ";

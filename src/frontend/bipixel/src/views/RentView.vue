@@ -374,7 +374,7 @@ export default {
         this.exDate = "";
         this.cvv = "";
         try {
-          const res = axiosInstance.post(URL.RENT, {
+          const res = await axiosInstance.post(URL.RENT, {
             movieId: this.showedMovie.mid,
             userId: this.$store.state.uid,
           });

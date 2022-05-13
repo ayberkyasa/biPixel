@@ -91,31 +91,77 @@
     <v-divider></v-divider>
     <v-dialog v-model="detailsDialog" max-width="500">
       <v-card>
-        <v-card-title class="text-h5 mb-3"> Movie Details </v-card-title>
-
+        <v-card-title class="text-h5 mb-3"> Payment</v-card-title>
         <v-card-text class="pl-9">
           <v-row class="text-subtitle-1">
-            <strong>Duration: {{ showedMovie.duration }} (min)</strong>
+            <strong>Card Holder's Name</strong>
+          </v-row>
+          <v-row>
+            <v-text-field
+              v-model="holderName"
+              label="Name"
+              filled
+              rounded
+              dense
+            >
+            </v-text-field>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Language Option: {{ showedMovie.language_option }}</strong>
+            <strong>Card Number</strong>
+          </v-row>
+          <v-row>
+            <v-text-field
+              v-model="cardNumber"
+              label="Card Number"
+              filled
+              rounded
+              dense
+            >
+            </v-text-field>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Subtitle Option: {{ showedMovie.subtitle_option }}</strong>
-          </v-row>
-          <v-row class="text-subtitle-1">
-            <strong>Actors: {{ actors }}</strong>
+            <v-col class="mr-3" cols="7">
+              <v-row>
+                <strong>Expiration Date</strong>
+              </v-row>
+              <v-row>
+                <v-text-field
+                  v-model="exDate"
+                  label="Expiration Date (MM/YY)"
+                  filled
+                  rounded
+                  dense
+                >
+                </v-text-field>
+              </v-row>
+            </v-col>
+            <v-col cols="4">
+              <v-row>
+                <strong>CVV</strong>
+              </v-row>
+              <v-row>
+                <v-text-field v-model="cvv" label="CVV" filled rounded dense>
+                </v-text-field>
+              </v-row>
+            </v-col>
+            <v-row v-if="error">
+              <span class="red--text text--darken-1">{{ errorMes }}</span>
+            </v-row>
           </v-row>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="pay"> PAY </v-btn>
           <v-btn color="red darken-1" text @click="detailsDialog = false">
-            Close
+            CLOSE
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar color="green lighten-1" timeout="2000" v-model="snackbar">
+      Movie was rented
+    </v-snackbar>
   </v-container>
 </template>
 <script>
@@ -123,6 +169,13 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      errorMes: "",
+      snackbar: false,
+      error: false,
+      holderName: "",
+      cardNumber: "",
+      exDate: "",
+      cvv: "",
       favorites: [],
       actors: "",
       showedMovie: {},
@@ -288,6 +341,83 @@ export default {
       } catch (error) {
         console.log("err");
       }
+    },
+    async pay() {
+      var checkEx = this.checkExDate();
+      var checkCVV = this.checkCVV();
+      if (
+        (this.holderName === "") |
+        (this.cardNumber === "") |
+        (this.exDate === "") |
+        (this.cvv === "")
+      ) {
+        this.errorMes = "ALL FIELDS MUST BE FILLED";
+        this.error = true;
+      } else if (
+        this.containsNumber(this.holderName) |
+        isNaN(this.cardNumber) |
+        !checkEx |
+        !checkCVV |
+        (this.cardNumber.length != 16)
+      ) {
+        this.errorMes = "FIELDS TYPES ARE NOT CORRECT";
+        this.error = true;
+      } else {
+        this.error = false;
+        this.snackbar = true;
+        this.detailsDialog = false;
+        this.holderName = "";
+        this.cardNumber = "";
+        this.exDate = "";
+        this.exDate = "";
+        this.cvv = "";
+        try {
+          const res = axiosInstance.post(URL.RENT, {
+            movieId: this.showedMovie.mid,
+            userId: this.$store.state.uid,
+          });
+          console.log(res);
+          try {
+            const res = await axiosInstance.get(URL.SEARCH_MOVIE, {
+              params: {
+                key: this.search,
+                userId: this.$store.state.uid,
+              },
+            });
+            await this.getFavorites();
+            this.movies = res.data;
+          } catch (error) {
+            console.log(error.response);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    },
+    checkExDate() {
+      if (this.exDate.length != 5) {
+        return false;
+      } else if (
+        isNaN(this.exDate[0]) |
+        isNaN(this.exDate[1]) |
+        (this.exDate[2] != "/") |
+        isNaN(this.exDate[3]) |
+        isNaN(this.exDate[4])
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    checkCVV() {
+      if ((this.cvv.length != 3) | isNaN(this.cvv)) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    containsNumber(str) {
+      return /\d/.test(str);
     },
   },
   async created() {

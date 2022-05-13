@@ -253,7 +253,7 @@ export default {
       console.log(this.showedMovie);
       try {
         const res = await axiosInstance.post(URL.RENEW, {
-          movieId: this.showedMovie.movie_id,
+          rentId: this.showedMovie.movie_id,
           userId: this.$store.state.uid,
         });
         this.snackbar = true;

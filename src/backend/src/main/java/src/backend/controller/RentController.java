@@ -149,7 +149,7 @@ public class RentController {
 
     @PostMapping("renew")
     public ResponseEntity<HashMap<String, Object>> renewMovie(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, movieId and userId will come.
+        // TODO: From RequestBody, rentId and userId will come.
         // TODO: If userId exists in Employee table, there is no fee. Otherwise, there is fee.
 
         HashMap<String, Object> result = new HashMap<>();

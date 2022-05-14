@@ -5,9 +5,9 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    isLoggedIn: true,
-    uid: 4,
-    userType: "Employee",
+    isLoggedIn: false,
+    uid: null,
+    userType: "",
   },
   mutations: {
     logIn(state, payload) {

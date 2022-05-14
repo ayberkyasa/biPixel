@@ -22,39 +22,60 @@ public class EmployeeController {
 
     @PostMapping("/add-movie")
     public ResponseEntity<HashMap<String, Object>> addMovie(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, all information about movie will come. Check ER Diagram from movie table.
         HashMap<String, Object> response = new HashMap<>();
-        String insertQuery = "INSERT INTO movie (title, overall_rating, duration, production_year, language_option, subtitle_option,price) " +
+        String insertMovieQuery = "INSERT INTO movie (title, overall_rating, duration, production_year, language_option, subtitle_option,price) " +
                 "VALUES " +
                 "(" +
                 "'" + requestBody.get("title") + "'" + "," +
-                requestBody.get("overall_rating") + "," +
+                null + "," +
                 requestBody.get("duration") + "," +
-                requestBody.get("production_year") + ","  +
+                "'" + requestBody.get("production_year") + "'" + ","  +
                 "'" + requestBody.get("language_option") + "'" + "," +
                 "'" + requestBody.get("subtitle_option") + "'" + "," +
                 requestBody.get("price") +
                 ");";
 
         String selectQuery = "SELECT * from movie " +
-                "WHERE title = '" + requestBody.get("title") + "' and " + "production_year = " + requestBody.get("production_year") + ";";
+                "WHERE title = '" + requestBody.get("title") + "' AND " + "production_year = '" + requestBody.get("production_year") + "';";
         List<HashMap<String, Object>> movieList = connector.executeQuery(selectQuery);
-        if(movieList.isEmpty()){
-            connector.executeUpdate(insertQuery);
-            response.put("message", "Movie was successfully added");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+        if(!movieList.isEmpty()){
+            response.put("message", "Movie has already existed.");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        response.put("message", "Movie exists");
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        connector.executeUpdate(insertMovieQuery);
+        String insertGenreQuery = "INSERT INTO movie_genre (movie_id, genre_id) VALUES ((SELECT MAX(movie_id) FROM movie), (SELECT genre_id FROM genre WHERE genre_name = ";
+        for(String genreName: (ArrayList<String>)requestBody.get("genres")) {
+            String insertGenreQuery2 = insertGenreQuery + "'" + genreName + "'));";
+            connector.executeUpdate(insertGenreQuery2);
+        }
+
+        String insertDirectQuery = "INSERT INTO direct (movie_id, director_id) VALUES ((SELECT MAX(movie_id) FROM movie), (SELECT director_id FROM director WHERE director_full_name = ";
+        for(String directorName: (ArrayList<String>)requestBody.get("directors_full_name")) {
+            if(connector.executeQuery("SELECT * FROM director WHERE director_full_name = '" + directorName + "';").isEmpty()) {
+                connector.executeUpdate("INSERT INTO director (director_full_name) VALUES ('" + directorName + "');");
+            }
+            String insertDirectQuery2 = insertDirectQuery + "'" + directorName + "'));";
+            connector.executeUpdate(insertDirectQuery2);
+        }
+        String insertActorQuery = "INSERT INTO act (movie_id, actor_id) VALUES ((SELECT MAX(movie_id) FROM movie), (SELECT actor_id FROM actor WHERE actor_full_name = ";
+        for(String actorName: (ArrayList<String>)requestBody.get("actors_full_name")) {
+            if(connector.executeQuery("SELECT * FROM actor WHERE actor_full_name = '" + actorName + "';").isEmpty()) {
+                connector.executeUpdate("INSERT INTO actor (actor_full_name) VALUES ('" + actorName + "');");
+            }
+            String insertActorQuery2 = insertActorQuery + "'" + actorName + "'));";
+            connector.executeUpdate(insertActorQuery2);
+        }
+        response.put("message", "Movie was successfully added");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
 
     }
 
     @DeleteMapping("/remove-movie")
-    public ResponseEntity<HashMap<String, Object>> removeMovie(@RequestParam("movieId") Integer movieId) {
-        // TODO: Delete the movie specified by "movieId"
+    public ResponseEntity<HashMap<String, Object>> removeMovie(@RequestBody HashMap<String, Object> requestBody) {
         HashMap<String, Object> response = new HashMap<>();
 
-        String removeMovieQuery = "DELETE FROM movie WHERE movie_id = " + movieId + ";";
+        String removeMovieQuery = "DELETE FROM movie WHERE movie_id = " + requestBody.get("movieId") + ";";
         connector.executeUpdate(removeMovieQuery);
 
         response.put("message", "Movie was successfully deleted");
@@ -63,7 +84,6 @@ public class EmployeeController {
 
     @DeleteMapping("/delete-customer")
     public ResponseEntity<HashMap<String, Object>> deleteCustomer(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "userId" will come
         HashMap<String, Object> response = new HashMap<>();
 
         String deleteUserQuery = "DELETE FROM user WHERE user_id = " + requestBody.get("userId") + ";";
@@ -113,5 +133,21 @@ public class EmployeeController {
             movie.put("genres", genres_name);
         }
         return new ResponseEntity<>(movieList, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-all-requests")
+    public ResponseEntity<List<HashMap<String, Object>>> getAllRequests() {
+        String query = "SELECT * FROM requested_movie NATURAL JOIN request NATURAL JOIN user";
+        List<HashMap<String, Object>> requests = connector.executeQuery(query);
+        return new ResponseEntity<>(requests, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/reject-request")
+    public ResponseEntity<HashMap<String, Object>> rejectRequest(@RequestBody HashMap<String, Object> requestBody) {
+        String query = "DELETE FROM requested_movie WHERE req_movie_id = " + requestBody.get("req_movie_id");
+        connector.executeUpdate(query);
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("result", "The request was rejected.");
+        return new ResponseEntity<HashMap<String, Object>>(result, HttpStatus.OK);
     }
 }

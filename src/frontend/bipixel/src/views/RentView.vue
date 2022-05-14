@@ -60,7 +60,6 @@
           icon
           large
           @click="openDetailsDialog(item)"
-          @click.stop="detailsDialog = true"
           ><v-icon>mdi-information</v-icon></v-btn
         >
       </template>

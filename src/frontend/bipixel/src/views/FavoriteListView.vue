@@ -1,6 +1,6 @@
 <template>
   <v-container class="pa-16">
-    <v-row class="display-1 font-weight-medium mb-6">Favourite List</v-row>
+    <v-row class="display-1 font-weight-medium mb-6">Favorite List</v-row>
     <v-data-table
       :headers="headers"
       :items="favorites"
@@ -23,7 +23,7 @@
           class="mx-2"
           fab
           dark
-          small
+          x-small
           color="pink"
           @click="remFavourites(item)"
         >

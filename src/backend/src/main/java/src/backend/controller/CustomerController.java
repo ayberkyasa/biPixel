@@ -41,11 +41,13 @@ public class CustomerController {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            connector.executeUpdate("INSERT INTO requested_movie(title, production_year, directors_full_name, actors_full_name,  duration, genres)" +
+            String query = "INSERT INTO requested_movie(title, directors_full_name, actors_full_name, production_year, duration, genres)" +
                     " VALUES('" + requestBody.get("title") + "', '" + requestBody.get("directors_full_name") + "', '" + requestBody.get("actors_full_name") + "', '" + requestBody.get("production_year") + "'" +
-                    ", " + requestBody.get("duration") + ", '" + requestBody.get("genres") + "')");
-            connector.executeUpdate("INSERT INTO request(user_id, req_movie_id)" +
-                    " VALUES(" + requestBody.get("userId") + ", (SELECT MAX(req_movie_id) FROM requested_movie))");
+                    ", " + requestBody.get("duration") + ", '" + requestBody.get("genres") + "')";
+            connector.executeUpdate(query);
+            query = "INSERT INTO request(user_id, req_movie_id)" +
+                    " VALUES(" + requestBody.get("userId") + ", (SELECT MAX(req_movie_id) FROM requested_movie))";
+            connector.executeUpdate(query);
 
             result.put("result", "Your request is sent.");
             return new ResponseEntity<>(result, HttpStatus.OK);

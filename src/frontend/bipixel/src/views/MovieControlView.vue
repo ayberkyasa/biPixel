@@ -13,7 +13,7 @@
     <v-data-table
       :headers="headers"
       :items="movies"
-      item-key="email"
+      item-key="movie_id"
       class="elevation-1"
       :search="search"
     >
@@ -22,8 +22,7 @@
           color="green lighten-1"
           icon
           large
-          @click="showedMovie = item"
-          @click.stop="detailsDialog = true"
+          @click="openDetailsDialog(item)"
           ><v-icon>mdi-information</v-icon></v-btn
         >
       </template>
@@ -47,8 +46,9 @@
         <v-icon large class="red--text text--lighten-2 mr-2"
           >mdi-alert-circle-outline</v-icon
         ><span
-          >Directors, Actors, and Genre fields are multivalued so you can enter
-          multi values separated with commas in these fields.</span
+          >Directors, Actors, Genres, Languages, Subtitles fields are
+          multivalued so you can enter multi values separated with commas in
+          these fields.</span
         >
       </p></v-row
     >
@@ -60,25 +60,22 @@
           outlined
           dense
           rounded
-          :rules="[rules.required]"
           class="mb-4"
         ></v-text-field>
         <v-text-field
-          @blur="processDirectors"
+          v-model="add.directors_full_name"
           label="Directors"
           outlined
           dense
           rounded
-          :rules="[rules.required]"
           class="mb-4"
         ></v-text-field>
         <v-text-field
-          @blur="processActors"
+          v-model="add.actors_full_name"
           label="Actors"
           outlined
           dense
           rounded
-          :rules="[rules.required]"
           class="mb-4"
         ></v-text-field>
         <v-text-field
@@ -87,7 +84,6 @@
           outlined
           dense
           rounded
-          :rules="[rules.required]"
           class="mb-4"
         ></v-text-field>
         <v-text-field
@@ -96,35 +92,31 @@
           outlined
           dense
           rounded
-          :rules="[rules.required]"
           class="mb-4"
         ></v-text-field>
         <v-text-field
-          @blur="processGenre"
-          label="Genre"
+          v-model="add.genres"
+          label="Genres"
           outlined
           dense
           rounded
-          :rules="[rules.required]"
         ></v-text-field>
       </v-col>
       <v-col cols="12" md="4" class="pr-16">
         <v-text-field
           v-model="add.language_option"
-          label="Language"
+          label="Languages"
           outlined
           dense
           rounded
-          :rules="[rules.required]"
           class="mb-4"
         ></v-text-field>
         <v-text-field
           v-model="add.subtitle_option"
-          label="Subtitle"
+          label="Subtitles"
           outlined
           dense
           rounded
-          :rules="[rules.required]"
           class="mb-4"
         ></v-text-field>
         <v-text-field
@@ -133,7 +125,6 @@
           outlined
           dense
           rounded
-          :rules="[rules.required]"
           class="mb-4"
         ></v-text-field>
         <v-row class="text-center"
@@ -150,19 +141,9 @@
     <v-data-table
       :headers="headers2"
       :items="requests"
-      item-key="email"
+      item-key="req_movie_id"
       class="elevation-1"
     >
-      <template v-slot:[`item.details`]="{ item }">
-        <v-btn
-          color="green lighten-1"
-          icon
-          large
-          @click="showedMovie = item"
-          @click.stop="detailsDialog = true"
-          ><v-icon>mdi-information</v-icon></v-btn
-        >
-      </template>
       <template v-slot:[`item.accept`]="{ item }">
         <v-btn
           color="green darken-1"
@@ -191,16 +172,16 @@
 
         <v-card-text class="pl-9">
           <v-row class="text-subtitle-1">
-            <strong>Duration: </strong>
+            <strong>Duration: {{ showedMovie.duration }} (min)</strong>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Language Option: </strong>
+            <strong>Language Option: {{ showedMovie.language_option }} </strong>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Subtitle Option: </strong>
+            <strong>Subtitle Option: {{ showedMovie.subtitle_option }}</strong>
           </v-row>
           <v-row class="text-subtitle-1">
-            <strong>Actors: </strong>
+            <strong>Actors: {{ actors }}</strong>
           </v-row>
         </v-card-text>
 
@@ -218,7 +199,7 @@
 
         <v-card-text class="pl-9">
           <v-text-field
-            v-model="acceptedMovie.language_option"
+            v-model="acceptConfig.language_option"
             label="Language Option"
             outlined
             dense
@@ -226,7 +207,7 @@
             class="mb-4"
           ></v-text-field>
           <v-text-field
-            v-model="acceptedMovie.subtitle_option"
+            v-model="acceptConfig.subtitle_option"
             label="Subtitle Option"
             outlined
             dense
@@ -234,7 +215,7 @@
             class="mb-4"
           ></v-text-field>
           <v-text-field
-            v-model="acceptedMovie.price"
+            v-model="acceptConfig.price"
             label="Price"
             outlined
             dense
@@ -248,24 +229,19 @@
           <v-btn color="green darken-1" text @click="acceptRequest">
             Accept
           </v-btn>
-          <v-btn
-            color="red darken-1"
-            text
-            @click="
-              acceptDialog = false;
-              acceptedMovie.language_option = '';
-              acceptedMovie.subtitle_option = '';
-              acceptedMovie.price = '';
-            "
-          >
+          <v-btn color="red darken-1" text @click="closeAcceptDialog">
             Close
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar :color="color" timeout="2000" v-model="snackbar">
+      {{ text }}
+    </v-snackbar>
   </v-container>
 </template>
 <script>
+import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
@@ -273,15 +249,16 @@ export default {
       add: {
         title: "",
         directors_full_name: "",
-        actors_full_name: "[]",
+        actors_full_name: "",
         production_year: "",
-        duration: null,
+        duration: "",
         genres: "",
-      },
-      rules: {
-        required: (value) => !!value || "Required!",
+        price: "",
+        language_option: "",
+        subtitle_option: "",
       },
       acceptedMovie: {},
+      acceptConfig: {},
       acceptDialog: false,
       showedMovie: {},
       detailsDialog: false,
@@ -290,6 +267,10 @@ export default {
       rate: "",
       selected: "None",
       movies: [],
+      actors: "",
+      color: "",
+      snackbar: false,
+      text: "",
     };
   },
   computed: {
@@ -304,7 +285,7 @@ export default {
         {
           text: "Director",
           align: "start",
-          value: "director",
+          value: "directors_full_name",
           filterable: false,
           sortable: false,
         },
@@ -318,7 +299,7 @@ export default {
         {
           text: "Rate",
           align: "start",
-          value: "rate",
+          value: "overall_rating",
           sortable: false,
           filterable: false,
         },
@@ -326,7 +307,7 @@ export default {
           text: "Year",
           align: "start",
           filterable: false,
-          value: "year",
+          value: "production_year",
           sortable: false,
         },
         {
@@ -363,7 +344,7 @@ export default {
         {
           text: "Director",
           align: "start",
-          value: "director",
+          value: "directors_full_name",
           sortable: false,
         },
         {
@@ -375,13 +356,27 @@ export default {
         {
           text: "Year",
           align: "start",
-          value: "year",
+          value: "production_year",
           sortable: false,
         },
         {
-          text: "Details",
-          align: "center",
-          value: "details",
+          text: "Actors",
+          align: "start",
+          value: "actors_full_name",
+          filterable: false,
+          sortable: false,
+        },
+        {
+          text: "Duration",
+          align: "start",
+          value: "duration",
+          filterable: false,
+          sortable: false,
+        },
+        {
+          text: "Requester",
+          align: "start",
+          value: "full_name",
           filterable: false,
           sortable: false,
         },
@@ -403,44 +398,198 @@ export default {
     },
   },
   methods: {
-    processActors(e) {
-      if (e.target.value == "") this.add.actors_full_name = [];
-      else {
-        this.add.actors_full_name = e.target.value.split(",").map((value) => {
-          return value.trim();
-        });
-      }
+    showActors() {
+      this.showedMovie.actors_full_name.forEach((item) => {
+        this.actors += item + ", ";
+      });
     },
-    processDirectors(e) {
-      if (e.target.value == "") this.add.directors_full_name = [];
+    openDetailsDialog(item) {
+      this.showedMovie = item;
+      this.detailsDialog = true;
+      this.showActors();
+    },
+    closeAcceptDialog() {
+      this.acceptConfig = {};
+      this.acceptDialog = false;
+    },
+    processActors(item) {
+      if (item.actors_full_name == "") item.actors_full_name = [];
       else {
-        this.add.directors_full_name = e.target.value
+        item.actors_full_name = item.actors_full_name
           .split(",")
           .map((value) => {
             return value.trim();
           });
       }
     },
-    processGenre(e) {
-      if (e.target.value == "") this.add.genres = [];
+    processDirectors(item) {
+      if (item.directors_full_name == "") item.directors_full_name = [];
       else {
-        this.add.genres = e.target.value.split(",").map((value) => {
+        item.directors_full_name = item.directors_full_name
+          .split(",")
+          .map((value) => {
+            return value.trim();
+          });
+      }
+    },
+    processGenre(item) {
+      if (item.genres == "") item.genres = [];
+      else {
+        item.genres = item.genres.split(",").map((value) => {
           return value.trim();
         });
       }
     },
-    deleteMovie() {},
-    addMovie() {
-      return;
+    async deleteMovie(item) {
+      try {
+        const response = await axiosInstance.delete(URL.REMOVE_MOVIE, {
+          data: {
+            movieId: item.movie_id,
+          },
+        });
+        this.text = response.data.message;
+        this.color = "green lighten-1";
+        this.snackbar = true;
+        await this.getAllMovies();
+      } catch (error) {
+        this.text = error.response.data.message;
+        this.color = "red darken-1";
+        this.snackbar = true;
+      }
     },
-    acceptRequest() {
-      console.log(this.acceptedMovie);
+    async addMovie() {
+      if (
+        this.add.title === "" ||
+        this.add.directors_full_name === "" ||
+        this.add.actors_full_name === "" ||
+        this.add.production_year === "" ||
+        this.add.duration === "" ||
+        this.add.genres === "" ||
+        this.add.price === "" ||
+        this.add.language_option === "" ||
+        this.add.subtitle_option === ""
+      ) {
+        this.text = "All fields must be filled.";
+        this.color = "red darken-1";
+        this.snackbar = true;
+        return;
+      }
+      this.add.duration = Number(this.add.duration);
+      this.add.price = Number(this.add.price);
+      if (isNaN(this.add.duration) || isNaN(this.add.price)) {
+        this.text = "Field types are not correct.";
+        this.color = "red darken-1";
+        this.snackbar = true;
+        return;
+      }
+      this.processActors(this.add);
+      this.processDirectors(this.add);
+      this.processGenre(this.add);
+      try {
+        const response = await axiosInstance.post(URL.ADD_MOVIE, this.add);
+        this.text = response.data.message;
+        this.color = "green lighten-1";
+        this.snackbar = true;
+        await this.getAllMovies();
+      } catch (error) {
+        this.text = error.response.data.message;
+        this.color = "red darken-1";
+        this.snackbar = true;
+      }
+      this.add = {
+        title: "",
+        directors_full_name: "",
+        actors_full_name: "",
+        production_year: "",
+        duration: "",
+        genres: "",
+        price: "",
+        language_option: "",
+        subtitle_option: "",
+      };
+    },
+    async getRequests() {
+      try {
+        const response = await axiosInstance.get(URL.GET_ALL_REQUESTS);
+        this.requests = response.data;
+      } catch (error) {
+        return;
+      }
+    },
+    async acceptRequest() {
+      if (
+        this.acceptConfig.price === "" ||
+        this.acceptConfig.language_option === "" ||
+        this.acceptConfig.subtitle_option === ""
+      ) {
+        this.text = "All fields must be filled.";
+        this.color = "red darken-1";
+        this.snackbar = true;
+        return;
+      }
+      this.acceptConfig.price = Number(this.acceptConfig.price);
+      if (isNaN(this.acceptConfig.price)) {
+        this.text = "Field types are not correct.";
+        this.color = "red darken-1";
+        this.snackbar = true;
+        return;
+      }
+      this.processActors(this.acceptedMovie);
+      this.processDirectors(this.acceptedMovie);
+      this.processGenre(this.acceptedMovie);
+      try {
+        const response = await axiosInstance.post(URL.ADD_MOVIE, {
+          ...this.acceptedMovie,
+          ...this.acceptConfig,
+        });
+        this.text = response.data.message;
+        this.color = "green lighten-1";
+        this.snackbar = true;
+        await axiosInstance.delete(URL.REJECT_REQUEST, {
+          data: {
+            req_movie_id: this.acceptedMovie.req_movie_id,
+          },
+        });
+        await this.getRequests();
+        await this.getAllMovies();
+      } catch (error) {
+        this.text = error.response.data.message;
+        this.color = "red darken-1";
+        this.snackbar = true;
+      }
+      this.acceptedMovie = {};
+      this.acceptConfig = {};
       this.acceptDialog = false;
     },
-    rejectRequest(item) {
-      console.log(item);
-      return;
+    async rejectRequest(item) {
+      try {
+        const response = await axiosInstance.delete(URL.REJECT_REQUEST, {
+          data: {
+            req_movie_id: item.req_movie_id,
+          },
+        });
+        this.text = response.data.result;
+        this.color = "green lighten-1";
+        this.snackbar = true;
+        await this.getRequests();
+      } catch (error) {
+        this.text = error.response.data.result;
+        this.color = "red darken-1";
+        this.snackbar = true;
+      }
     },
+    async getAllMovies() {
+      try {
+        const response = await axiosInstance.get(URL.GET_ALL_MOVIES);
+        this.movies = response.data;
+      } catch (error) {
+        return;
+      }
+    },
+  },
+  async created() {
+    await this.getAllMovies();
+    await this.getRequests();
   },
 };
 </script>

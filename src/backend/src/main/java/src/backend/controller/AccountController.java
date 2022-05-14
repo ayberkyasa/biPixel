@@ -230,6 +230,11 @@ public class AccountController {
                 result.put("result", "Recommendation failed! You are not friends.");
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+            returned = connector.executeQuery("SELECT * FROM recommendation WHERE recommender = " + requestBody.get("recommender") + " AND friend = " + requestBody.get("friend") + " AND movie_id = " + requestBody.get("movieId") + ";");
+            if(returned.size() > 0) {
+                result.put("result", "Recommendation failed! You have already recommended this movie to this friend.");
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
             else {
                 connector.executeUpdate("INSERT INTO recommendation (recommender, friend, movie_id) VALUES (" + requestBody.get("recommender") + ", " + requestBody.get("friend") + ", " + requestBody.get("movieId") + ")");
                 result.put("result", "Recommendation successful!");

@@ -283,7 +283,7 @@ public class AccountController {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            List<HashMap<String, Object>> recommended = connector.executeQuery("SELECT movie_id FROM recommendation WHERE friend = " + userId);
+            List<HashMap<String, Object>> recommended = connector.executeQuery("SELECT DISTINCT movie_id FROM recommendation WHERE friend = " + userId);
             for (int i = 0; i < recommended.size(); i++) {
                 mid = (Integer) recommended.get(i).values().toArray()[0];
 

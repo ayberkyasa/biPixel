@@ -58,6 +58,7 @@ public class WithdrawController {
 
         List<HashMap<String, Object>> nameList;
 
+        HashMap<String, Object> rid;
         HashMap<String, Object> title;
         HashMap<String, Object> year;
         HashMap<String, Object> rating;
@@ -81,6 +82,7 @@ public class WithdrawController {
 
             movie = new HashMap<>();
 
+            rid = connector.executeQuery("SELECT MAX(rent_id) FROM rent_movie WHERE movie_id = " + mid + " AND user_id = " + userId).get(0);
             title = connector.executeQuery("SELECT title FROM movie WHERE movie_id = " + mid).get(0);
             year = connector.executeQuery("SELECT production_year FROM movie WHERE movie_id = " + mid).get(0);
             rating = connector.executeQuery("SELECT overall_rating FROM movie WHERE movie_id = " + mid).get(0);
@@ -110,6 +112,7 @@ public class WithdrawController {
                 genreList.add(name);
             }
 
+            movie.put("rent_id", rid.values().toArray()[0]);
             movie.put("title", title.values().toArray()[0]);
             movie.put("production_year", year.values().toArray()[0]);
             movie.put("overall_rating", rating.values().toArray()[0]);

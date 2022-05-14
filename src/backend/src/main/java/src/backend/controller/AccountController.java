@@ -249,7 +249,32 @@ public class AccountController {
 
     @GetMapping("/get-recommended-movies")
     public ResponseEntity<?> getRecommendedMovies(@RequestParam("userId") Integer userId) {
-        // TODO: return list of all recon
+        int mid;
+        int id;
+
+        String name;
+
+        List<String> recommenderList;
+        List<String> directorList;
+        List<String> genreList;
+
+        List<HashMap<String, Object>> recommendList;
+        List<HashMap<String, Object>> directList;
+        List<HashMap<String, Object>> genList;
+
+        List<HashMap<String, Object>> nameList;
+
+        HashMap<String, Object> title;
+        HashMap<String, Object> year;
+        HashMap<String, Object> rating;
+        HashMap<String, Object> price;
+        HashMap<String, Object> movie;
+        HashMap<String, Object> duration;
+        HashMap<String, Object> language_option;
+        HashMap<String, Object> subtitle_option;
+
+        List<HashMap<String, Object>> returned2 = new ArrayList<>();
+
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + userId);
             if(returned.size() == 0) {
@@ -257,8 +282,66 @@ public class AccountController {
                 result.put("result", "Retrieval of recommended movies failed! User does not exist.");
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-            List<HashMap<String, Object>> recommended = connector.executeQuery("SELECT * FROM movie WHERE movie_id IN (SELECT movie_id FROM recommendation WHERE friend = " + userId + ")");
-            return new ResponseEntity<>(recommended, HttpStatus.OK);
+
+            List<HashMap<String, Object>> recommended = connector.executeQuery("SELECT movie_id FROM recommendation WHERE friend = " + userId);
+            for (int i = 0; i < recommended.size(); i++) {
+                mid = (Integer) recommended.get(i).values().toArray()[0];
+
+                recommendList = connector.executeQuery("SELECT recommender FROM recommendation WHERE friend = " + userId + " AND movie_id = " + mid);
+                directList = connector.executeQuery("SELECT director_id FROM direct WHERE movie_id = " + mid);
+                genList = connector.executeQuery("SELECT genre_id FROM movie_genre WHERE movie_id = " + mid);
+
+
+                recommenderList = new ArrayList<String>();
+                directorList = new ArrayList<String>();
+                genreList = new ArrayList<String>();
+
+                movie = new HashMap<>();
+
+                title = connector.executeQuery("SELECT title FROM movie WHERE movie_id = " + mid).get(0);
+                year = connector.executeQuery("SELECT production_year FROM movie WHERE movie_id = " + mid).get(0);
+                rating = connector.executeQuery("SELECT overall_rating FROM movie WHERE movie_id = " + mid).get(0);
+                price = connector.executeQuery("SELECT price FROM movie WHERE movie_id = " + mid).get(0);
+                duration = connector.executeQuery("SELECT duration FROM movie WHERE movie_id = " + mid).get(0);
+                language_option = connector.executeQuery("SELECT language_option FROM movie WHERE movie_id = " + mid).get(0);
+                subtitle_option = connector.executeQuery("SELECT subtitle_option FROM movie WHERE movie_id = " + mid).get(0);
+
+                for (int z = 0; z < directList.size(); z++) {
+                    id = (Integer) directList.get(z).values().toArray()[0];
+                    nameList = connector.executeQuery("SELECT director_full_name FROM director WHERE director_id = " + id);
+                    name = (String) nameList.get(0).values().toArray()[0];
+                    directorList.add(name);
+                }
+
+                for (int z = 0; z < genList.size(); z++) {
+                    id = (Integer) genList.get(z).values().toArray()[0];
+                    nameList = connector.executeQuery("SELECT genre_name FROM genre WHERE genre_id = " + id);
+                    name = (String) nameList.get(0).values().toArray()[0];
+                    genreList.add(name);
+                }
+
+                for (int z = 0; z < recommendList.size(); z++) {
+                    id = (Integer) recommendList.get(z).values().toArray()[0];
+                    nameList = connector.executeQuery("SELECT full_name FROM user WHERE user_id = " + id);
+                    name = (String) nameList.get(0).values().toArray()[0];
+                    recommenderList.add(name);
+                }
+
+                movie.put("recommender", recommenderList);
+                movie.put("title", title.values().toArray()[0]);
+                movie.put("production_year", year.values().toArray()[0]);
+                movie.put("overall_rating", rating.values().toArray()[0]);
+                movie.put("price", price.values().toArray()[0]);
+                movie.put("directors", directorList);
+                movie.put("genres", genreList);
+                movie.put("movie_id", mid);
+                movie.put("duration", duration.values().toArray()[0]);
+                movie.put("language_option", language_option.values().toArray()[0]);
+                movie.put("subtitle_option", subtitle_option.values().toArray()[0]);
+
+                returned2.add(movie);
+            }
+            return new ResponseEntity<>(returned2, HttpStatus.OK);
         }
         catch (Exception e) {
             HashMap<String, Object> result = new HashMap<>();

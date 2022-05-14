@@ -83,7 +83,7 @@
           small
           dark
           @click="showedMovie = item"
-          @click.stop="openRentDialog(item)"
+          @click.stop="rent(item)"
           >Rent</v-btn
         >
       </template>
@@ -331,6 +331,33 @@ export default {
     },
   },
   methods: {
+    async rent(item) {
+      if (!this.$store.state.userType === "Employee") {
+        this.openRentDialog(item);
+      }else{
+        try {
+          const res = await axiosInstance.post(URL.RENT, {
+            movieId: this.showedMovie.mid,
+            userId: this.$store.state.uid,
+          });
+          console.log(res);
+          try {
+            const res = await axiosInstance.get(URL.SEARCH_MOVIE, {
+              params: {
+                key: this.search,
+                userId: this.$store.state.uid,
+              },
+            });
+            await this.getFavorites();
+            this.movies = res.data;
+          } catch (error) {
+            console.log(error.response);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    },
     checkFav(item) {
       var check = false;
       this.favorites.forEach((elm) => {

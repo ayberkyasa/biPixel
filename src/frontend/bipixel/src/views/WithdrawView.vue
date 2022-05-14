@@ -375,7 +375,9 @@ export default {
       }
     },
     async withdraw() {
-      this.payDialog = true;
+      if (!this.$store.state.userType == "Employee") {
+        this.payDialog = true;
+      }
       // try {
       //   const res = await axiosInstance.post(URL.WITHDRAW, {
       //     movideId: this.showedMovie.movideId,

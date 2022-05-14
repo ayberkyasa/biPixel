@@ -70,7 +70,7 @@
           small
           dark
           @click="showedMovie = item"
-          @click.stop="detailsDialog = true"
+          @click.stop="withdraw"
           >Withdraw</v-btn
         >
       </template>
@@ -113,8 +113,80 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="payDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h5 mb-3"> Payment</v-card-title>
+        <v-card-text class="pl-9">
+          <v-row class="text-subtitle-1">
+            <strong>Card Holder's Name</strong>
+          </v-row>
+          <v-row>
+            <v-text-field
+              v-model="holderName"
+              label="Name"
+              filled
+              rounded
+              dense
+            >
+            </v-text-field>
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Card Number</strong>
+          </v-row>
+          <v-row>
+            <v-text-field
+              v-model="cardNumber"
+              label="Card Number"
+              filled
+              rounded
+              dense
+            >
+            </v-text-field>
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <v-col class="mr-3" cols="7">
+              <v-row>
+                <strong>Expiration Date</strong>
+              </v-row>
+              <v-row>
+                <v-text-field
+                  v-model="exDate"
+                  label="Expiration Date (MM/YY)"
+                  filled
+                  rounded
+                  dense
+                >
+                </v-text-field>
+              </v-row>
+            </v-col>
+            <v-col cols="4">
+              <v-row>
+                <strong>CVV</strong>
+              </v-row>
+              <v-row>
+                <v-text-field v-model="cvv" label="CVV" filled rounded dense>
+                </v-text-field>
+              </v-row>
+            </v-col>
+            <v-row v-if="error">
+              <span class="red--text text--darken-1">{{ errorMes }}</span>
+            </v-row>
+          </v-row>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn dark color="green darken-1" @click="pay">
+            PAY ({{ this.showedMovie.price }} TL)
+          </v-btn>
+          <v-btn dark color="red darken-1" @click="payDialog = false">
+            CLOSE
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-snackbar :color="color" timeout="2000" v-model="snackbar">
-      {{mes}}
+      {{ mes }}
     </v-snackbar>
   </v-container>
 </template>
@@ -123,13 +195,21 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      errorMes: "",
+      error: false,
+      holderName: "",
+      cardNumber: "",
+      exDate: "",
+      cvv: "",
       snackbar: false,
       mes: "",
       color: "",
       rentedMovies: [],
+      favorites: [],
       actors: "",
       showedMovie: {},
       detailsDialog: false,
+      payDialog: false,
       search: "",
       price: "",
       rate: "",
@@ -232,6 +312,13 @@ export default {
           sortable: false,
         },
         {
+          text: "Add Favorites",
+          align: "center",
+          value: "addFav",
+          filterable: false,
+          sortable: false,
+        },
+        {
           text: "",
           align: "center",
           value: "withdraw",
@@ -249,6 +336,128 @@ export default {
     },
   },
   methods: {
+    checkFav(item) {
+      console.log("girdi");
+      console.log(this.favorites);
+      console.log(item);
+
+      var check = false;
+      this.favorites.forEach((elm) => {
+        if (elm.movie_id === item.movie_id) {
+          check = true;
+        }
+      });
+      return check;
+    },
+    async addFavorites(value) {
+      try {
+        const res = await axiosInstance.post(URL.ADD_FAVORITE, {
+          movieId: value.movie_id,
+          userId: this.$store.state.uid,
+        });
+        console.log(res);
+        await this.getFavorites();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getFavorites() {
+      try {
+        const res = await axiosInstance.get(URL.GET_FAVORITE_LIST, {
+          params: {
+            userId: this.$store.state.uid,
+          },
+        });
+        this.favorites = res.data;
+        console.log(this.favorites);
+      } catch (error) {
+        console.log("err");
+      }
+    },
+    async withdraw() {
+      this.payDialog = true;
+      // try {
+      //   const res = await axiosInstance.post(URL.WITHDRAW, {
+      //     movideId: this.showedMovie.movideId,
+      //     userId: this.$store.state.uid,
+      //   });
+      //   this.mes = "The movie was withdrawn";
+      //   this.snackbar = true;
+      //   this.color = "green lighten-1";
+      //   try {
+      //     const res = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
+      //       params: {
+      //         key: this.search,
+      //         userId: this.$store.state.uid,
+      //       },
+      //     });
+      //     this.rentedMovies = res.data;
+      //   } catch (error) {
+      //     console.log(error.response);
+      //   }
+      //   console.log(res);
+      // } catch (error) {
+      //   console.log(error);
+      // }
+    },
+    async pay() {
+      var checkEx = this.checkExDate();
+      var checkCVV = this.checkCVV();
+      if (
+        (this.holderName === "") |
+        (this.cardNumber === "") |
+        (this.exDate === "") |
+        (this.cvv === "")
+      ) {
+        this.errorMes = "ALL FIELDS MUST BE FILLED";
+        this.error = true;
+      } else if (
+        this.containsNumber(this.holderName) |
+        isNaN(this.cardNumber) |
+        !checkEx |
+        !checkCVV |
+        (this.cardNumber.length != 16)
+      ) {
+        this.errorMes = "FIELDS TYPES ARE NOT CORRECT";
+        this.error = true;
+      } else {
+        this.error = false;
+        this.snackbar = true;
+        this.payDialog = false;
+        this.holderName = "";
+        this.cardNumber = "";
+        this.exDate = "";
+        this.exDate = "";
+        this.cvv = "";
+        this.color = "green lighten-1";
+        this.mes = this.mes = "The movie was withdrawn";
+      }
+    },
+    checkExDate() {
+      if (this.exDate.length != 5) {
+        return false;
+      } else if (
+        isNaN(this.exDate[0]) |
+        isNaN(this.exDate[1]) |
+        (this.exDate[2] != "/") |
+        isNaN(this.exDate[3]) |
+        isNaN(this.exDate[4])
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    checkCVV() {
+      if ((this.cvv.length != 3) | isNaN(this.cvv)) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    containsNumber(str) {
+      return /\d/.test(str);
+    },
     async renew() {
       console.log(this.showedMovie);
       try {
@@ -278,7 +487,6 @@ export default {
     },
   },
   async created() {
-    console.log(this.search);
     try {
       const res = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
         params: {
@@ -286,6 +494,8 @@ export default {
           userId: this.$store.state.uid,
         },
       });
+      await this.getFavorites();
+
       this.rentedMovies = res.data;
     } catch (error) {
       console.log(error.response);

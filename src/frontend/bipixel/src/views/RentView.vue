@@ -59,7 +59,7 @@
           color="green lighten-1"
           icon
           large
-          @click="openDialog(item)"
+          @click="openDetailsDialog(item)"
           @click.stop="detailsDialog = true"
           ><v-icon>mdi-information</v-icon></v-btn
         >
@@ -83,13 +83,13 @@
           small
           dark
           @click="showedMovie = item"
-          @click.stop="detailsDialog = true"
+          @click.stop="openRentDialog(item)"
           >Rent</v-btn
         >
       </template>
     </v-data-table>
     <v-divider></v-divider>
-    <v-dialog v-model="detailsDialog" max-width="500">
+    <v-dialog v-model="rentDialog" max-width="500">
       <v-card>
         <v-card-title class="text-h5 mb-3"> Payment</v-card-title>
         <v-card-text class="pl-9">
@@ -153,8 +153,35 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn dark color="green darken-1" @click="pay">
-            PAY ({{ this.showedMovie.price }} TL)
+            PAY ({{ this.rentPrice }} TL)
           </v-btn>
+          <v-btn dark color="red darken-1" @click="rentDialog = false">
+            CLOSE
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="detailsDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h5 mb-3"> Movie Details</v-card-title>
+        <v-card-text class="pl-9">
+          <v-row class="text-subtitle-1">
+            <strong>Duration: {{ showedMovie.duration }} (min)</strong>
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Language Option: {{ showedMovie.language_option }}</strong>
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Subtitle Option: {{ showedMovie.subtitle_option }}</strong>
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Actors: {{ actors }}</strong>
+          </v-row>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
           <v-btn dark color="red darken-1" @click="detailsDialog = false">
             CLOSE
           </v-btn>
@@ -182,8 +209,10 @@ export default {
       actors: "",
       showedMovie: {},
       detailsDialog: false,
+      rentDialog: false,
       search: "",
       price: "",
+      rentPrice: "",
       rate: "",
       selected: "None",
       movies: [],
@@ -328,9 +357,19 @@ export default {
         this.actors += item + ", ";
       });
     },
-    openDialog(item) {
+    openDetailsDialog(item) {
       this.showedMovie = item;
+      this.detailsDialog = true;
       this.showActors();
+    },
+    openRentDialog(item) {
+      this.showedMovie = item;
+      if (this.$store.state.userType == "Employee") {
+        this.rentPrice = 0;
+      } else {
+        this.rentPrice = item.price;
+      }
+      this.rentDialog = true;
     },
     async getFavorites() {
       try {
@@ -367,7 +406,7 @@ export default {
       } else {
         this.error = false;
         this.snackbar = true;
-        this.detailsDialog = false;
+        this.rentDialog = false;
         this.holderName = "";
         this.cardNumber = "";
         this.exDate = "";

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import src.backend.connector.Connector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -75,9 +76,42 @@ public class EmployeeController {
 
     @GetMapping("/get-all-customers")
     public ResponseEntity<List<HashMap<String, Object>>> getAllCustomers() {
-        // TODO: return all customers
         String customerQuery = "SELECT * FROM user WHERE user_id in (SELECT user_id FROM customer);";
         List<HashMap<String, Object>> customerList = connector.executeQuery(customerQuery);
         return new ResponseEntity<>(customerList, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-all-movies")
+    public ResponseEntity<List<HashMap<String, Object>>> getAllMovies() {
+        List<HashMap<String, Object>> movieList = connector.executeQuery("SELECT * FROM movie;");
+        List<HashMap<String, Object>> actors;
+        List<HashMap<String, Object>>directors;
+        List<HashMap<String, Object>> genres;
+        for(HashMap<String, Object> movie : movieList) {
+            String query = "SELECT actor_full_name FROM actor WHERE actor_id IN (SELECT actor_id FROM act WHERE movie_id = " + movie.get("movie_id") + ");";
+            actors = connector.executeQuery(query);
+            ArrayList<String> actors_full_name = new ArrayList<>();
+            for(HashMap<String, Object> actor : actors) {
+                actors_full_name.add((String) actor.get("actor_full_name"));
+            }
+            movie.put("actors_full_name", actors_full_name);
+
+            query = "SELECT director_full_name FROM director WHERE director_id IN (SELECT director_id FROM direct WHERE movie_id = " + movie.get("movie_id") + ");";
+            directors = connector.executeQuery(query);
+            ArrayList<String> directors_full_name = new ArrayList<>();
+            for(HashMap<String, Object> director : directors) {
+                directors_full_name.add((String) director.get("director_full_name"));
+            }
+            movie.put("directors_full_name", directors_full_name);
+
+            query = "SELECT genre_name FROM genre WHERE genre_id IN (SELECT genre_id FROM movie_genre WHERE movie_id = " + movie.get("movie_id") + ");";
+            genres = connector.executeQuery(query);
+            ArrayList<String> genres_name = new ArrayList<>();
+            for(HashMap<String, Object> genre : genres) {
+                genres_name.add((String) genre.get("genre_name"));
+            }
+            movie.put("genres", genres_name);
+        }
+        return new ResponseEntity<>(movieList, HttpStatus.OK);
     }
 }

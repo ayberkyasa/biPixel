@@ -24,6 +24,7 @@ export const URL = {
     REMOVE_MOVIE: "remove-movie",
     DELETE_CUSTOMER: "delete-customer",
     GET_ALL_CUSTOMERS: "get-all-customers",
+    GET_ALL_MOVIES: "get-all-movies",
     REQUEST_MOVIE: "request-movie",
     SEARCH_MOVIE: "search-movie",
     RENT: "rent",

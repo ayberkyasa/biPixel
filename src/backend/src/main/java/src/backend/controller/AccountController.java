@@ -241,7 +241,6 @@ public class AccountController {
 
     @GetMapping("/get-recommended-movies")
     public ResponseEntity<?> getRecommendedMovies(@RequestParam("userId") Integer userId) {
-        // TODO: show recommended movies
         int mid;
         int id;
 
@@ -403,7 +402,6 @@ public class AccountController {
 
     @GetMapping("/get-favorite-list")
     public ResponseEntity<?> getFavoriteList(@RequestParam("userId") Integer userId) {
-        // TODO: show favorite list
         int mid;
         int id;
 
@@ -566,7 +564,7 @@ public class AccountController {
     @GetMapping("/show-movie-history")
     public ResponseEntity<?> showMovieHistory(@RequestParam("userId") Integer userId) {
         HashMap<String, Object> result = new HashMap<>();
-        String query = "SELECT title, production_year, price, rent_date, last_renew_date, renew_times FROM movie NATURAL JOIN rent_movie NATURAL JOIN rent WHERE user_id = " + userId + " and withdrawn = true";
+        String query = "SELECT movie_id, title, production_year, price, rent_date, last_renew_date, renew_times FROM movie NATURAL JOIN rent_movie NATURAL JOIN rent WHERE user_id = " + userId + " and withdrawn = true";
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery(query);
             return new ResponseEntity<>(returned, HttpStatus.OK);

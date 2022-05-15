@@ -21,7 +21,7 @@ public class WithdrawController {
 
     @GetMapping("/list-all-rented-movies")
     public ResponseEntity<?> listAllRentedMovies(@RequestParam("key") String searchKey,
-                                                             @RequestParam("userId") Integer userId) {
+                                                 @RequestParam("userId") Integer userId) {
         HashMap<String, Object> result = new HashMap<>();
         List<HashMap<String, Object>> movieList;
         if(!searchKey.equals("")){
@@ -43,6 +43,7 @@ public class WithdrawController {
 
         int mid;
         int id;
+        int rid_int;
 
         String name;
 
@@ -57,6 +58,10 @@ public class WithdrawController {
         List<HashMap<String, Object>> nameList;
 
         HashMap<String, Object> rid;
+        HashMap<String, Object> rent_date;
+        HashMap<String, Object> due_date;
+        HashMap<String, Object> last_renew_date;
+        HashMap<String, Object> renew_times;
         HashMap<String, Object> title;
         HashMap<String, Object> year;
         HashMap<String, Object> rating;
@@ -81,6 +86,11 @@ public class WithdrawController {
             movie = new HashMap<>();
 
             rid = connector.executeQuery("SELECT MAX(rent_id) FROM rent_movie WHERE movie_id = " + mid + " AND user_id = " + userId).get(0);
+            rid_int = (Integer) rid.values().toArray()[0];
+            rent_date = connector.executeQuery("SELECT rent_date FROM rent WHERE rent_id = " + rid_int).get(0);
+            due_date = connector.executeQuery("SELECT due_date FROM rent WHERE rent_id = " + rid_int).get(0);
+            last_renew_date = connector.executeQuery("SELECT last_renew_date FROM rent WHERE rent_id = " + rid_int).get(0);
+            renew_times = connector.executeQuery("SELECT renew_times FROM rent WHERE rent_id = " + rid_int).get(0);
             title = connector.executeQuery("SELECT title FROM movie WHERE movie_id = " + mid).get(0);
             year = connector.executeQuery("SELECT production_year FROM movie WHERE movie_id = " + mid).get(0);
             rating = connector.executeQuery("SELECT overall_rating FROM movie WHERE movie_id = " + mid).get(0);
@@ -111,6 +121,10 @@ public class WithdrawController {
             }
 
             movie.put("rent_id", rid.values().toArray()[0]);
+            movie.put("rent_date", rent_date.values().toArray()[0]);
+            movie.put("due_date", due_date.values().toArray()[0]);
+            movie.put("last_renew_date", last_renew_date.values().toArray()[0]);
+            movie.put("renew_times", renew_times.values().toArray()[0]);
             movie.put("title", title.values().toArray()[0]);
             movie.put("production_year", year.values().toArray()[0]);
             movie.put("overall_rating", rating.values().toArray()[0]);

@@ -565,25 +565,10 @@ public class AccountController {
 
     @GetMapping("/show-movie-history")
     public ResponseEntity<?> showMovieHistory(@RequestParam("userId") Integer userId) {
-        // TODO: Return all previously rented movies of the user specified by "userId"
-        // WARNING: This returned list should include movie ratings and reviews of the user.
         HashMap<String, Object> result = new HashMap<>();
+        String query = "SELECT title, production_year, price, rent_date, last_renew_date, renew_times FROM movie NATURAL JOIN rent_movie NATURAL JOIN rent WHERE user_id = " + userId + " and withdrawn = true";
         try {
-            List<HashMap<String, Object>> returned = connector.executeQuery("SELECT title, rating, review FROM movie NATURAL JOIN rent_movie NATURAL JOIN rating NATURAL JOIN review WHERE user_id = " + userId + " and withdrawn = true");
-            return new ResponseEntity<>(returned, HttpStatus.OK);
-        } catch (Exception e) {
-            result.put("result", "Failure due to exception.");
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/show-current-movies")
-    public ResponseEntity<?> showCurrentMovies(@RequestParam("userId") Integer userId) {
-        // TODO: Return currently rented movies of the user specified by "userId"
-        // WARNING: This returned list should include movie ratings and reviews of the user.
-        HashMap<String, Object> result = new HashMap<>();
-        try {
-            List<HashMap<String, Object>> returned = connector.executeQuery("SELECT title, rating, review FROM movie NATURAL JOIN rent_movie NATURAL JOIN rating NATURAL JOIN review WHERE user_id = " + userId + " and withdrawn = false");
+            List<HashMap<String, Object>> returned = connector.executeQuery(query);
             return new ResponseEntity<>(returned, HttpStatus.OK);
         } catch (Exception e) {
             result.put("result", "Failure due to exception.");

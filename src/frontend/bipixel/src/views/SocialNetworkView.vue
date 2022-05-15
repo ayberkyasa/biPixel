@@ -13,9 +13,9 @@
     <v-tabs color="deep-blue accent-4" v-model="tab">
       <v-tabs-slider color="blue"></v-tabs-slider>
       <v-tab>Add Friend</v-tab>
-      <v-tab>Remove Friend</v-tab>
-      <v-tab>Sent and Pending Requests</v-tab>
-      <v-tab>Received and Pending Requests</v-tab>
+      <v-tab>Remove Friend {{ friendCount }}</v-tab>
+      <v-tab>Sent and Pending Requests {{ sentCount }}</v-tab>
+      <v-tab>Received and Pending Requests {{ receiveCount }}</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
@@ -168,6 +168,9 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      friendCount: "",
+      sentCount: "",
+      receiveCount: "",
       mes: "",
       snackbar: false,
       color: "",
@@ -343,6 +346,9 @@ export default {
             userId: this.$store.state.uid,
           },
         });
+        if (friends.data.length !== 0) {
+          this.friendCount = `(${friends.data.length})`;
+        }
         this.friends = friends.data;
       } catch (error) {
         console.log(error);
@@ -357,6 +363,9 @@ export default {
             },
           }
         );
+        if (receiving.data.length !== 0) {
+          this.receiveCount = `(${receiving.data.length})`;
+        }
         this.receivedPending = receiving.data;
       } catch (error) {
         console.log(error);
@@ -368,6 +377,9 @@ export default {
             userId: this.$store.state.uid,
           },
         });
+        if (sent.data.length !== 0) {
+          this.sentCount = `(${sent.data.length})`;
+        }
         this.sentPending = sent.data;
       } catch (error) {
         console.log(error);

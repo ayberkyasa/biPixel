@@ -70,7 +70,7 @@
           small
           dark
           @click="showedMovie = item"
-          @click.stop="withdraw"
+          @click.stop="withdraw(item)"
           >Withdraw</v-btn
         >
       </template>
@@ -183,7 +183,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn dark color="green darken-1" @click="pay">
-            PAY ({{ this.showedMovie.price }} TL)
+            PAY ({{ withdrawPrice }} TL)
           </v-btn>
           <v-btn dark color="red darken-1" @click="payDialog = false">
             CLOSE
@@ -201,6 +201,7 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      withdrawPrice: "",
       errorMes: "",
       error: false,
       holderName: "",
@@ -358,8 +359,15 @@ export default {
         console.log("err");
       }
     },
-    async withdraw() {
+    async withdraw(item) {
+      console.log(item)
       if (this.$store.state.userType !== "Employee") {
+        const res = await axiosInstance.get(URL.GET_FEE, {
+          params: {
+            rentId: item.rent_id
+          }
+        })
+        this.withdrawPrice = res.data;
         this.payDialog = true;
       } else {
         try {

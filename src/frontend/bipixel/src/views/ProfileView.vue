@@ -52,10 +52,10 @@
     <v-row class="display-1 font-weight-medium mb-6">Information</v-row>
     <v-tabs color="deep-blue accent-4" v-model="tab">
       <v-tabs-slider color="blue"></v-tabs-slider>
-      <v-tab>Past Rents</v-tab>
-      <v-tab>Current Rents</v-tab>
-      <v-tab>Recommendations From Friends</v-tab>
-      <v-tab>Rating and Review</v-tab>
+      <v-tab>Past Rents {{ pastCount }}</v-tab>
+      <v-tab>Current Rents {{ currentCount }}</v-tab>
+      <v-tab>Recommendations From Friends {{ recCount }}</v-tab>
+      <v-tab>Rating and Review {{ reviewCount }}</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
@@ -71,6 +71,7 @@
               rounded
               small
               dark
+              v-if="checkReview(item)"
               @click="review(item)"
               @click.stop="reviewDialog = true"
               >Review</v-btn
@@ -85,23 +86,22 @@
           item-key="email"
           class="elevation-1"
         >
-          <template v-slot:[`item.review`]="{ item }">
-            <v-btn
-              color="green lighten-1"
-              rounded
-              small
-              dark
-              @click="review(item)"
-              @click.stop="reviewDialog = true"
-              >Review</v-btn
-            >
-          </template>
+
         </v-data-table>
       </v-tab-item>
       <v-tab-item>
         <v-data-table
           :headers="headers1"
           :items="recommendationsFromFriends"
+          item-key="email"
+          class="elevation-1"
+        >
+        </v-data-table>
+      </v-tab-item>
+      <v-tab-item>
+        <v-data-table
+          :headers="headers3"
+          :items="reviews"
           item-key="email"
           class="elevation-1"
         >
@@ -147,6 +147,10 @@ import axiosInstance, { URL } from "@/services/axiosConfig";
 export default {
   data() {
     return {
+      pastCount: "",
+      currentCount: "",
+      recCount: "",
+      reviewCount: "",
       rate: 10,
       comment: "",
       rates: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -155,6 +159,7 @@ export default {
       reviewDialog: false,
       currentRents: [],
       recommendationsFromFriends: [],
+      reviews: [],
       showedMovie: {},
       color: "",
       text: "",
@@ -310,8 +315,44 @@ export default {
         },
       ];
     },
+    headers3() {
+      return [
+        {
+          text: "Title",
+          align: "start",
+          value: "title",
+          sortable: false,
+        },
+        {
+          text: "Review",
+          align: "start",
+          value: "review",
+          sortable: false,
+        },
+        {
+          text: "Rating",
+          align: "start",
+          filterable: false,
+          value: "rating",
+          sortable: false,
+        },
+      ];
+    },
   },
   methods: {
+    checkReview(item) {
+      console.log(this.reviews)
+      var check = true;
+      for(let i = 0; i < this.reviews.length; i++){
+        if(this.reviews[i].movie_id === item.movie_id){
+          check = false;
+          i = this.reviews.length;
+        }else{
+          check = true;
+        }
+      }
+      return check;
+    },
     review(item) {
       console.log(item);
       this.showedMovie = item;
@@ -334,6 +375,7 @@ export default {
             userId: this.$store.state.uid,
             ratingScore: this.rate,
           });
+
           console.log(res);
           console.log(res2);
         } catch (error) {
@@ -342,6 +384,7 @@ export default {
         this.comment = "";
         this.rate = 10;
       }
+      this.initialize();
     },
     async initialize() {
       try {
@@ -350,6 +393,9 @@ export default {
             userId: parseInt(this.$store.state.uid),
           },
         });
+        if (past.data.length !== 0) {
+          this.pastCount = `(${past.data.length})`;
+        }
         this.pastRents = past.data;
       } catch (error) {
         console.log(error);
@@ -362,6 +408,9 @@ export default {
             userId: this.$store.state.uid,
           },
         });
+        if (current.data.length !== 0) {
+          this.currentCount = `(${current.data.length})`;
+        }
         this.currentRents = current.data;
       } catch (error) {
         console.log(error);
@@ -376,6 +425,9 @@ export default {
             },
           }
         );
+        if (recommendations.data.length !== 0) {
+          this.recCount = `(${recommendations.data.length})`;
+        }
         this.recommendationsFromFriends = recommendations.data;
       } catch (error) {
         console.log(error);
@@ -391,6 +443,20 @@ export default {
         this.information.email = user.data.email;
         this.information.birth_date = user.data.birth_date;
         this.information.status = this.$store.state.userType;
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        const res = await axiosInstance.get(URL.GET_REVIEWS_AND_RATINGS, {
+          params: {
+            userId: this.$store.state.uid,
+          },
+        });
+        if (res.data.length !== 0) {
+          this.reviewCount = `(${res.data.length})`;
+        }
+        this.reviews = res.data;
       } catch (error) {
         console.log(error);
       }

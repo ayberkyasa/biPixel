@@ -195,7 +195,6 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
-      rentId: 0,
       errorMes: "",
       error: false,
       holderName: "",
@@ -458,10 +457,9 @@ export default {
       return /\d/.test(str);
     },
     async renew() {
-      console.log(this.showedMovie);
       try {
         const res = await axiosInstance.post(URL.RENEW, {
-          rentId: this.showedMovie.movie_id,
+          rentId: this.showedMovie.rent_id,
           userId: this.$store.state.uid,
         });
         this.snackbar = true;
@@ -469,9 +467,8 @@ export default {
         this.color = "green lighten-1";
       } catch (error) {
         this.snackbar = true;
-        this.mes = "You can renew the rental period at most 3 times.";
+        this.mes = error.response.data.result;
         this.color = "red lighten-1";
-        console.log(error);
       }
     },
     showActors() {
@@ -493,7 +490,6 @@ export default {
         },
       });
       console.log(res);
-      this.rentId = res.data.rent_id;
       await this.getFavorites();
 
       this.rentedMovies = res.data;

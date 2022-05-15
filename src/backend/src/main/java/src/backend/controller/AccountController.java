@@ -503,7 +503,6 @@ public class AccountController {
 
     @PostMapping("/write-review")
     public ResponseEntity<HashMap<String, Object>> writeReview(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "movieId", "userId", "reviewComment" will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM rent_movie WHERE movie_id = " + requestBody.get("movieId") + " and user_id = " + requestBody.get("userId"));
@@ -525,7 +524,6 @@ public class AccountController {
 
     @PostMapping("/rate")
     public ResponseEntity<HashMap<String, Object>> rate(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "movieId", "userId", "ratingScore" will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             connector.executeUpdate("INSERT INTO rating(user_id, movie_id, rating) VALUES(" + requestBody.get("userId") + ", " + requestBody.get("movieId") + ", " + requestBody.get("ratingScore") + ")");

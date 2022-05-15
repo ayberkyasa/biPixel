@@ -330,9 +330,7 @@ export default {
   },
   methods: {
     async rent(item) {
-      
       if (this.$store.state.userType !== "Employee") {
-        console.log("girdi")
         this.openRentDialog(item);
       } else {
         try {
@@ -380,6 +378,7 @@ export default {
       }
     },
     showActors() {
+      this.actors = "";
       this.showedMovie.actors.forEach((item) => {
         this.actors += item + ", ";
       });

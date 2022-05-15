@@ -101,7 +101,13 @@
             <strong>Subtitle Option: {{ showedMovie.subtitle_option }}</strong>
           </v-row>
           <v-row class="text-subtitle-1">
+            <strong>Directors: {{ directors }}</strong>
+          </v-row>
+          <v-row class="text-subtitle-1">
             <strong>Actors: {{ actors }}</strong>
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Genres: {{ genres }}</strong>
           </v-row>
         </v-card-text>
 
@@ -207,39 +213,14 @@ export default {
       rentedMovies: [],
       favorites: [],
       actors: "",
+      directors: "",
+      genres: "",
       showedMovie: {},
       detailsDialog: false,
       payDialog: false,
       search: "",
       price: "",
       rate: "",
-      selected: "None",
-      selectElements: [
-        {
-          key: "none",
-          value: "None",
-        },
-        {
-          key: "action",
-          value: "Action",
-        },
-        {
-          key: "comedy",
-          value: "Comedy",
-        },
-        {
-          key: "sci_fi",
-          value: "Science Fiction",
-        },
-        {
-          key: "romance",
-          value: "Romance",
-        },
-        {
-          key: "mystery",
-          value: "Mystery",
-        },
-      ],
     };
   },
   computed: {
@@ -252,24 +233,32 @@ export default {
           sortable: false,
         },
         {
-          text: "Director",
+          text: "Rent Date",
           align: "start",
-          value: "directors",
+          value: "rent_date",
           filterable: false,
           sortable: false,
         },
         {
-          text: "Genre",
+          text: "Last Renew Date",
           sortable: false,
           align: "start",
-          value: "genres",
-          filter: (value) => {
-            if (this.selected === "None") {
-              return true;
-            } else {
-              return value === this.selected;
-            }
-          },
+          value: "last_renew_date",
+          filterable: false,
+        },
+        {
+          text: "Due Date",
+          sortable: false,
+          align: "start",
+          value: "due_date",
+          filterable: false,
+        },
+        {
+          text: "Renew Times",
+          sortable: false,
+          align: "start",
+          value: "renew_times",
+          filterable: false,
         },
         {
           text: "Rate",
@@ -465,6 +454,13 @@ export default {
         this.snackbar = true;
         this.mes = res.data.result;
         this.color = "green lighten-1";
+        const response = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
+          params: {
+            key: this.search,
+            userId: this.$store.state.uid,
+          },
+        });
+        this.rentedMovies = response.data;
       } catch (error) {
         this.snackbar = true;
         this.mes = error.response.data.result;
@@ -472,13 +468,28 @@ export default {
       }
     },
     showActors() {
+      this.actors = "";
       this.showedMovie.actors.forEach((item) => {
         this.actors += item + ", ";
+      });
+    },
+    showDirectors() {
+      this.directors = "";
+      this.showedMovie.directors.forEach((item) => {
+        this.directors += item + ", ";
+      });
+    },
+    showGenres() {
+      this.genres = "";
+      this.showedMovie.genres.forEach((item) => {
+        this.genres += item + ", ";
       });
     },
     openDialog(item) {
       this.showedMovie = item;
       this.showActors();
+      this.showDirectors();
+      this.showGenres();
     },
   },
   async created() {

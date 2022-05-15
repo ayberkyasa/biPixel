@@ -297,6 +297,12 @@ export default {
           value: "last_renew_date",
         },
         {
+          text: "Due Date",
+          sortable: false,
+          align: "start",
+          value: "due_date",
+        },
+        {
           text: "Renew Times",
           align: "start",
           value: "renew_times",

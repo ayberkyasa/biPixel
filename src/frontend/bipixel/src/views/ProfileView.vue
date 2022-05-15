@@ -80,7 +80,7 @@
       </v-tab-item>
       <v-tab-item>
         <v-data-table
-          :headers="headers"
+          :headers="headers2"
           :items="currentRents"
           item-key="email"
           class="elevation-1"
@@ -262,6 +262,48 @@ export default {
         },
       ];
     },
+    headers2() {
+      return [
+        {
+          text: "Title",
+          align: "start",
+          value: "title",
+          sortable: false,
+        },
+        {
+          text: "Price (TL)",
+          align: "start",
+          value: "price",
+          sortable: false,
+        },
+        {
+          text: "Year",
+          align: "start",
+          filterable: false,
+          value: "production_year",
+          sortable: false,
+        },
+        {
+          text: "Rent Date",
+          align: "start",
+          value: "rent_date",
+          filterable: false,
+          sortable: false,
+        },
+        {
+          text: "Last Renew Date",
+          sortable: false,
+          align: "start",
+          value: "last_renew_date",
+        },
+        {
+          text: "Renew Times",
+          align: "start",
+          value: "renew_times",
+          sortable: false,
+        },
+      ];
+    },
   },
   methods: {
     review(item) {
@@ -328,7 +370,6 @@ export default {
             },
           }
         );
-        console.log(recommendations);
         this.recommendationsFromFriends = recommendations.data;
       } catch (error) {
         console.log(error);

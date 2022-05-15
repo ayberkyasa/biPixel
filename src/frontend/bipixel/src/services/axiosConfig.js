@@ -33,6 +33,7 @@ export const URL = {
     RENT: "rent",
     RENEW: "renew",
     GET_ALL_RENTED_MOVIES: "list-all-rented-movies",
+    GET_GENRES: "get-genres",
     WITHDRAW: "withdraw",
     ADD_FRIEND: "add-friend",
     DELETE_FRIEND: "delete-friend",
@@ -49,5 +50,4 @@ export const URL = {
     SEND_REVIEW: "write-review",
     SEND_RATE: "rate",
     GET_MOVIE_HISTORY: "show-movie-history",
-    GET_CURRENT_MOVIES: "show-current-movies",
 };

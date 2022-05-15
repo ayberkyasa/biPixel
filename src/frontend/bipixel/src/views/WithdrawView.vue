@@ -195,6 +195,7 @@ import axiosInstance, { URL } from "../services/axiosConfig";
 export default {
   data() {
     return {
+      rentId: 0,
       errorMes: "",
       error: false,
       holderName: "",
@@ -337,10 +338,6 @@ export default {
   },
   methods: {
     checkFav(item) {
-      console.log("girdi");
-      console.log(this.favorites);
-      console.log(item);
-
       var check = false;
       this.favorites.forEach((elm) => {
         if (elm.movie_id === item.movie_id) {
@@ -375,32 +372,32 @@ export default {
       }
     },
     async withdraw() {
-      if (!this.$store.state.userType == "Employee") {
+      if (this.$store.state.userType !== "Employee") {
         this.payDialog = true;
       }
-      // try {
-      //   const res = await axiosInstance.post(URL.WITHDRAW, {
-      //     movideId: this.showedMovie.movideId,
-      //     userId: this.$store.state.uid,
-      //   });
-      //   this.mes = "The movie was withdrawn";
-      //   this.snackbar = true;
-      //   this.color = "green lighten-1";
-      //   try {
-      //     const res = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
-      //       params: {
-      //         key: this.search,
-      //         userId: this.$store.state.uid,
-      //       },
-      //     });
-      //     this.rentedMovies = res.data;
-      //   } catch (error) {
-      //     console.log(error.response);
-      //   }
-      //   console.log(res);
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      try {
+        const res = await axiosInstance.post(URL.WITHDRAW, {
+          rentId: this.showedMovie.rent_id,
+          userId: this.$store.state.uid,
+        });
+        this.mes = "The movie was withdrawn";
+        this.snackbar = true;
+        this.color = "green lighten-1";
+        try {
+          const res = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
+            params: {
+              key: this.search,
+              userId: this.$store.state.uid,
+            },
+          });
+          this.rentedMovies = res.data;
+        } catch (error) {
+          console.log(error.response);
+        }
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
     },
     async pay() {
       var checkEx = this.checkExDate();
@@ -470,7 +467,6 @@ export default {
         this.snackbar = true;
         this.mes = res.data.result;
         this.color = "green lighten-1";
-        console.log(res);
       } catch (error) {
         this.snackbar = true;
         this.mes = "You can renew the rental period at most 3 times.";
@@ -496,6 +492,8 @@ export default {
           userId: this.$store.state.uid,
         },
       });
+      console.log(res)
+      this.rentId = res.data.rent_id;
       await this.getFavorites();
 
       this.rentedMovies = res.data;

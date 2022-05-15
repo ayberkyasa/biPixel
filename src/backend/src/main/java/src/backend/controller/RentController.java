@@ -145,20 +145,39 @@ public class RentController {
         }
     }
 
+    @GetMapping("get-genres")
+    public ResponseEntity<List<String>> getGenres(){
+        List<HashMap<String, Object>> response = new ArrayList<>();
+        String sql = "SELECT genre_name from genre;";
+        response = connector.executeQuery(sql);
+        List<String> genres = new ArrayList<>();
+        for(int i = 0; i < response.size(); i++){
+            genres.add(response.get(i).get("genre_name").toString());
+        }
+        return new ResponseEntity<>(genres, HttpStatus.OK);
+    }
+
     @PostMapping("renew")
     public ResponseEntity<HashMap<String, Object>> renewMovie(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, rentId and userId will come.
-        // TODO: If userId exists in Employee table, there is no fee. Otherwise, there is fee.
-
+        int renewTimes;
         HashMap<String, Object> result = new HashMap<>();
+        String query1 = "SELECT renew_times FROM rent WHERE rent_id = " + requestBody.get("rentId");
+        String query2 = "UPDATE rent" +
+                " SET last_renew_date = CURRENT_DATE(), due_date = date_add(CURRENT_DATE(), INTERVAL 7 DAY), renew_times = renew_times + 1" +
+                " WHERE rent_id = " + requestBody.get("rentId");
         try {
-            connector.executeUpdate("UPDATE rent" +
-                    " SET last_renew_date = CURRENT_DATE(), due_date = date_add(CURRENT_DATE(), INTERVAL 7 DAY), renew_times = renew_times + 1" +
-                    " WHERE rent_id = " + requestBody.get("rentId"));
+            List<HashMap<String, Object>> returned = connector.executeQuery(query1);
+            renewTimes = (Integer) returned.get(0).values().toArray()[0];
 
-            result.put("result", "The movie is renewed.");
-            return new ResponseEntity<>(result, HttpStatus.OK);
-
+            if (renewTimes == 3) {
+                result.put("result", "You can renew the rental period at most 3 times");
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+            else {
+                connector.executeUpdate(query2);
+                result.put("result", "The movie is renewed.");
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
         } catch (Exception e) {
             result.put("result", "Failure due to exception.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);

@@ -527,30 +527,7 @@ public class AccountController {
     public ResponseEntity<HashMap<String, Object>> rate(@RequestBody HashMap<String, Object> requestBody) {
         // TODO: From RequestBody, "movieId", "userId", "ratingScore" will come.
         HashMap<String, Object> result = new HashMap<>();
-        List<HashMap<String, Object>> returned = connector.executeQuery("SELECT rating FROM rating WHERE movie_id = " + requestBody.get("movieId") + " and user_id = " + requestBody.get("userId") + "");
-        String rating = returned.get(0).toString();
-        int i = rating.indexOf("}");
-
         try {
-            List<HashMap<String, Object>> returned2 = connector.executeQuery("SELECT * FROM rent_movie WHERE movie_id = " + requestBody.get("movieId") + " and user_id = " + requestBody.get("userId"));
-            if (returned2.size() == 0) {
-                returned2 = connector.executeQuery("SELECT * FROM movie WHERE movie_id = " + requestBody.get("movieId"));
-                if (returned2.size() == 0) {
-                    result.put("result", "Rating failed! Movie does not exist");
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
-            }
-            if (returned.size() != 0) {
-                if (returned.get(0).toString().substring(8,i).equals(requestBody.get("ratingScore").toString())) {
-                    result.put("result", "The movie is already rated.");
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                } else {
-                    connector.executeUpdate("UPDATE rating SET rating = " + requestBody.get("ratingScore") + " WHERE movie_id = " + requestBody.get("movieId") + " AND user_id = " + requestBody.get("userId"));
-                    connector.executeUpdate("UPDATE movie SET overall_rating = (SELECT avg(rating) FROM rating WHERE movie_id = " + requestBody.get("movieId") + ") WHERE movie_id = " + requestBody.get("movieId") + "");
-                    result.put("result", "The rating is updated.");
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-            }
             connector.executeUpdate("INSERT INTO rating VALUES(" + requestBody.get("userId") + ", " + requestBody.get("movieId") + ", " + requestBody.get("ratingScore") + ")");
             connector.executeUpdate("UPDATE movie SET overall_rating = (SELECT avg(rating) FROM rating WHERE movie_id = " + requestBody.get("movieId") + ") WHERE movie_id = " + requestBody.get("movieId") + "");
             result.put("result", "The movie is rated.");
@@ -573,4 +550,5 @@ public class AccountController {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
+
 }

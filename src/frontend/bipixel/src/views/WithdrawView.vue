@@ -361,30 +361,31 @@ export default {
     async withdraw() {
       if (this.$store.state.userType !== "Employee") {
         this.payDialog = true;
-      }
-      try {
-        const res = await axiosInstance.post(URL.WITHDRAW, {
-          rentId: this.showedMovie.rent_id,
-          userId: this.$store.state.uid,
-        });
-        this.mes = "The movie was withdrawn";
-        this.snackbar = true;
-        this.color = "green lighten-1";
+      } else {
         try {
-          const res = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
-            params: {
-              key: this.search,
-              userId: this.$store.state.uid,
-            },
+          const res = await axiosInstance.post(URL.WITHDRAW, {
+            rentId: this.showedMovie.rent_id,
+            userId: this.$store.state.uid,
           });
-          this.rentedMovies = res.data;
-          console.log(this.rentedMovies);
+          this.mes = "The movie was withdrawn";
+          this.snackbar = true;
+          this.color = "green lighten-1";
+          try {
+            const res = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
+              params: {
+                key: this.search,
+                userId: this.$store.state.uid,
+              },
+            });
+            this.rentedMovies = res.data;
+            console.log(this.rentedMovies);
+          } catch (error) {
+            console.log(error.response);
+          }
+          console.log(res);
         } catch (error) {
-          console.log(error.response);
+          console.log(error);
         }
-        console.log(res);
-      } catch (error) {
-        console.log(error);
       }
     },
     async pay() {
@@ -417,7 +418,31 @@ export default {
         this.exDate = "";
         this.cvv = "";
         this.color = "green lighten-1";
-        this.mes = this.mes = "The movie was withdrawn";
+
+        try {
+          const res = await axiosInstance.post(URL.WITHDRAW, {
+            rentId: this.showedMovie.rent_id,
+            userId: this.$store.state.uid,
+          });
+          this.mes = "The movie was withdrawn";
+          this.snackbar = true;
+          this.color = "green lighten-1";
+          try {
+            const res = await axiosInstance.get(URL.GET_ALL_RENTED_MOVIES, {
+              params: {
+                key: this.search,
+                userId: this.$store.state.uid,
+              },
+            });
+            this.rentedMovies = res.data;
+            console.log(this.rentedMovies);
+          } catch (error) {
+            console.log(error.response);
+          }
+          console.log(res);
+        } catch (error) {
+          console.log(error);
+        }
       }
     },
     checkExDate() {

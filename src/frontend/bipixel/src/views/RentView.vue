@@ -11,16 +11,16 @@
       ></v-text-field
     ></v-row>
     <v-row class="align-center mb-2">
-      <v-col cols="12" sm="1" class="pl-5"> Select Category: </v-col>
-      <v-col cols="12" sm="11">
-        <v-chip-group mandatory active-class="primary--text">
-          <v-chip
-            v-for="el in selectElements"
-            :key="el.key"
-            @click="selected = el.value"
-            >{{ el.value }}</v-chip
-          >
-        </v-chip-group>
+      <v-col cols="1" sm="1" class="pl-5"> Select Category: </v-col>
+      <v-col cols="5" class="mx-5">
+        <v-select
+          v-model="selected"
+          :items="selectElements"
+          attach
+          label="Categories"
+          item-text="value"
+          return-object
+        ></v-select>
       </v-col>
     </v-row>
     <v-row>
@@ -213,34 +213,9 @@ export default {
       price: "",
       rentPrice: "",
       rate: "",
-      selected: "None",
+      selected: "",
       movies: [],
-      selectElements: [
-        {
-          key: "none",
-          value: "None",
-        },
-        {
-          key: "action",
-          value: "Action",
-        },
-        {
-          key: "comedy",
-          value: "Comedy",
-        },
-        {
-          key: "sci_fi",
-          value: "Science Fiction",
-        },
-        {
-          key: "romance",
-          value: "Romance",
-        },
-        {
-          key: "mystery",
-          value: "Mystery",
-        },
-      ],
+      selectElements: [],
     };
   },
   computed: {
@@ -264,10 +239,16 @@ export default {
           align: "start",
           value: "genres",
           filter: (value) => {
-            if (this.selected === "None") {
+            if (this.selected === "") {
               return true;
             } else {
-              return value === this.selected;
+              var check = false;
+              value.forEach((item) => {
+                if (this.selected === item) {
+                  check = true;
+                }
+              });
+              return check;
             }
           },
         },
@@ -495,6 +476,10 @@ export default {
           userId: this.$store.state.uid,
         },
       });
+
+      const genres = await axiosInstance.get(URL.GET_GENRES);
+      this.selectElements = genres.data;
+      console.log(this.selectElements);
       await this.getFavorites();
       this.movies = res.data;
     } catch (error) {

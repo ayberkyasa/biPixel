@@ -272,8 +272,7 @@ export default {
       if ((this.comment !== "") & (this.comment.length <= 300)) {
         console.log(this.rate);
         this.reviewDialog = false;
-        this.comment = "";
-        this.rate = 10;
+
         console.log(this.showedMovie);
         try {
           const res = await axiosInstance.post(URL.SEND_REVIEW, {
@@ -285,14 +284,15 @@ export default {
           const res2 = await axiosInstance.post(URL.SEND_RATE, {
             movieId: this.showedMovie.movie_id,
             userId: this.$store.state.uid,
-            ratingScore: this.rate
+            ratingScore: this.rate,
           });
           console.log(res);
           console.log(res2);
-
         } catch (error) {
           console.log(error);
         }
+        this.comment = "";
+        this.rate = 10;
       }
     },
     async initialize() {

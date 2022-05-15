@@ -330,7 +330,9 @@ export default {
   },
   methods: {
     async rent(item) {
-      if (!this.$store.state.userType === "Employee") {
+      
+      if (this.$store.state.userType !== "Employee") {
+        console.log("girdi")
         this.openRentDialog(item);
       } else {
         try {

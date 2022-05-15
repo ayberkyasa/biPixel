@@ -145,6 +145,18 @@ public class RentController {
         }
     }
 
+    @GetMapping("get-genres")
+    public ResponseEntity<List<String>> getGenres(){
+        List<HashMap<String, Object>> response = new ArrayList<>();
+        String sql = "SELECT genre_name from genre;";
+        response = connector.executeQuery(sql);
+        List<String> genres = new ArrayList<>();
+        for(int i = 0; i < response.size(); i++){
+            genres.add(response.get(i).get("genre_name").toString());
+        }
+        return new ResponseEntity<>(genres, HttpStatus.OK);
+    }
+
     @PostMapping("renew")
     public ResponseEntity<HashMap<String, Object>> renewMovie(@RequestBody HashMap<String, Object> requestBody) {
         int renewTimes;

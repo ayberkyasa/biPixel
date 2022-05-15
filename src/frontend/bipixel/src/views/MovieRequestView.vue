@@ -3,7 +3,16 @@
     <v-row class="display-1">Request Movie</v-row>
     <v-row>
       <p
-        class="my-4 px-2 py-2 grey lighten-2 red--text text--lighten-2 rounded-pill"
+        class="
+          my-4
+          px-2
+          py-2
+          grey
+          lighten-2
+          red--text
+          text--lighten-2
+          rounded-pill
+        "
       >
         <v-icon large class="red--text text--lighten-2 mr-2"
           >mdi-alert-circle-outline</v-icon
@@ -55,6 +64,14 @@
           rounded
           class="mb-4"
         ></v-text-field>
+        <v-select
+          :items="friends"
+          v-model="selectedFriend"
+          :menu-props="{ top: true, offsetY: true }"
+          label="Select a Genre"
+          item-text="full_name"
+          return-object
+        ></v-select>
         <v-text-field
           v-model="request.genres"
           label="Genres"

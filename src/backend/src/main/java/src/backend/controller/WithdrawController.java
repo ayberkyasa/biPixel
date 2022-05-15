@@ -37,8 +37,7 @@ public class WithdrawController {
 
 
         if (movieList.size() == 0) {
-            result.put("result", "Movie does not exist.");
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(movieList, HttpStatus.OK);
         }
 
         int mid;

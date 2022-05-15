@@ -366,7 +366,6 @@ export default {
           },
         });
         this.favorites = res.data;
-        console.log(this.favorites);
       } catch (error) {
         console.log("err");
       }
@@ -391,6 +390,7 @@ export default {
             },
           });
           this.rentedMovies = res.data;
+          console.log(this.rentedMovies);
         } catch (error) {
           console.log(error.response);
         }
@@ -492,7 +492,7 @@ export default {
           userId: this.$store.state.uid,
         },
       });
-      console.log(res)
+      console.log(res);
       this.rentId = res.data.rent_id;
       await this.getFavorites();
 

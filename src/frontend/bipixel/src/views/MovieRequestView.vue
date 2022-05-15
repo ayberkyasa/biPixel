@@ -64,14 +64,6 @@
           rounded
           class="mb-4"
         ></v-text-field>
-        <v-select
-          :items="friends"
-          v-model="selectedFriend"
-          :menu-props="{ top: true, offsetY: true }"
-          label="Select a Genre"
-          item-text="full_name"
-          return-object
-        ></v-select>
         <v-text-field
           v-model="request.genres"
           label="Genres"

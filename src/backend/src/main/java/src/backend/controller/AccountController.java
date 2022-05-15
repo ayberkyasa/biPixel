@@ -28,7 +28,6 @@ public class AccountController {
 
     @PostMapping("/add-friend")
     public ResponseEntity<HashMap<String, Object>> addFriend(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "whoSendRequest" and "whoReceiveRequest" will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + requestBody.get("whoSendRequest"));
@@ -57,7 +56,6 @@ public class AccountController {
 
     @PostMapping("/answer-request")
     public ResponseEntity<HashMap<String, Object>> answerRequest(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "requestId", "whoSendRequest" and "whoAnswerRequest" will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + requestBody.get("whoSendRequest"));
@@ -92,7 +90,6 @@ public class AccountController {
 
     @DeleteMapping("/delete-friend")
     public ResponseEntity<HashMap<String, Object>> deleteFriend(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "whoDelete" and "whoIsDeleted" will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + requestBody.get("whoDelete"));
@@ -127,7 +124,6 @@ public class AccountController {
 
     @GetMapping("/show-friends")
     public ResponseEntity<?> showFriends(@RequestParam("userId") Integer userId) {
-        // TODO: Return list of all friends of the user specified by "userId"
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + userId);
             if(returned.size() == 0) {
@@ -147,7 +143,6 @@ public class AccountController {
 
      @GetMapping("/show-non-friends")
      public ResponseEntity<?> showNonFriends(@RequestParam("userId") Integer userId) {
-        // TODO: Return list of all users who are not friends of the user specified by "userId"
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + userId);
             if(returned.size() == 0) {
@@ -167,7 +162,6 @@ public class AccountController {
 
     @GetMapping("/show-receiving-friend-requests")
     public ResponseEntity<?> showReceivingFriendRequests(@RequestParam("userId") Integer userId) {
-        // TODO: Return list of all users who sent a friend request to the user specified by "userId"
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + userId);
             if(returned.size() == 0) {
@@ -187,7 +181,6 @@ public class AccountController {
 
     @GetMapping("/show-sent-friend-requests")
     public ResponseEntity<?> showSentFriendRequests(@RequestParam("userId") Integer userId) {
-        // TODO: Return list of all users who received a friend request from the user specified by "userId"
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + userId);
             if(returned.size() == 0) {
@@ -207,7 +200,6 @@ public class AccountController {
 
     @PostMapping("/recommend-movie")
     public ResponseEntity<HashMap<String, Object>> recommendMovie(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "recommender", "friend", and "movieId" will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + requestBody.get("recommender"));
@@ -249,6 +241,7 @@ public class AccountController {
 
     @GetMapping("/get-recommended-movies")
     public ResponseEntity<?> getRecommendedMovies(@RequestParam("userId") Integer userId) {
+        // TODO: show recommended movies
         int mid;
         int id;
 
@@ -352,7 +345,6 @@ public class AccountController {
 
     @PostMapping("/add-favorite")
     public ResponseEntity<HashMap<String, Object>> addFavorite(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "movieId" and "userId" will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + requestBody.get("userId"));
@@ -382,7 +374,6 @@ public class AccountController {
 
     @DeleteMapping("/delete-favorite")
     public ResponseEntity<HashMap<String, Object>> deleteFavorite(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, "movieId" and "userId" will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             List<HashMap<String, Object>> returned = connector.executeQuery("SELECT * FROM user WHERE user_id = " + requestBody.get("userId"));
@@ -412,6 +403,7 @@ public class AccountController {
 
     @GetMapping("/get-favorite-list")
     public ResponseEntity<?> getFavoriteList(@RequestParam("userId") Integer userId) {
+        // TODO: show favorite list
         int mid;
         int id;
 

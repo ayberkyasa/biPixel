@@ -256,7 +256,6 @@ export default {
           text: "Director",
           align: "start",
           value: "directors",
-          filterable: false,
           sortable: false,
         },
         {
@@ -333,7 +332,7 @@ export default {
     async rent(item) {
       if (!this.$store.state.userType === "Employee") {
         this.openRentDialog(item);
-      }else{
+      } else {
         try {
           const res = await axiosInstance.post(URL.RENT, {
             movieId: this.showedMovie.mid,

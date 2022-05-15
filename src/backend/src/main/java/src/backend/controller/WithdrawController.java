@@ -22,8 +22,6 @@ public class WithdrawController {
     @GetMapping("/list-all-rented-movies")
     public ResponseEntity<?> listAllRentedMovies(@RequestParam("key") String searchKey,
                                                              @RequestParam("userId") Integer userId) {
-        // TODO: search the movies by title, director, production year, actor
-        // TODO: List all rented movies of the user specified by "userId"
         HashMap<String, Object> result = new HashMap<>();
         List<HashMap<String, Object>> movieList;
         if(!searchKey.equals("")){
@@ -132,7 +130,6 @@ public class WithdrawController {
 
     @PostMapping("/withdraw")
     public ResponseEntity<HashMap<String, Object>> withdrawMovie(@RequestBody HashMap<String, Object> requestBody) {
-        // TODO: From RequestBody, movieId and userId will come.
         HashMap<String, Object> result = new HashMap<>();
         try {
             connector.executeUpdate("UPDATE rent_movie" +

@@ -50,4 +50,5 @@ export const URL = {
     SEND_REVIEW: "write-review",
     SEND_RATE: "rate",
     GET_MOVIE_HISTORY: "show-movie-history",
+    GET_REVIEWS_AND_RATINGS: "get-reviews-and-ratings",
 };

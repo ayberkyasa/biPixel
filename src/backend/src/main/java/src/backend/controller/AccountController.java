@@ -536,6 +536,18 @@ public class AccountController {
         }
     }
 
+    @GetMapping("/get-reviews-and-ratings")
+    public ResponseEntity<List<HashMap<String, Object>>> getReviewsAndRatings(@RequestParam("userId") Integer userId) {
+        List<HashMap<String, Object>> result = new ArrayList<>();
+        String query = "SELECT movie_id, title, rating, review FROM rating NATURAL JOIN review NATURAL JOIN movie WHERE user_id = " + userId + ";";
+        try {
+            result = connector.executeQuery(query);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/show-movie-history")
     public ResponseEntity<?> showMovieHistory(@RequestParam("userId") Integer userId) {
         HashMap<String, Object> result = new HashMap<>();

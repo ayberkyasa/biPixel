@@ -157,4 +157,20 @@ public class WithdrawController {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/calculate-fee")
+    public int calculateFee(@RequestParam("rentId") Integer rentId) {
+        int fee;
+        int lateDays;
+        String query = "SELECT CURDATE() - (SELECT due_date FROM rent WHERE rent_id = " + rentId + ")";
+        List<HashMap<String, Object>> returned = connector.executeQuery(query);
+        lateDays = ((Long) returned.get(0).values().toArray()[0]).intValue();
+        if (lateDays <= 0) {
+            fee = 0;
+        }
+        else {
+            fee = 5 * lateDays;
+        }
+        return fee;
+    }
 }

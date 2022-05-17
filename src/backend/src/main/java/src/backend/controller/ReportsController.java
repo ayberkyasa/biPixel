@@ -44,8 +44,8 @@ public class ReportsController {
     /**
      * This report shows the genre names, ratings and the movie titles with the most rated movie in that specific genre.
      */
-    @GetMapping("/get-report-four")
-    public ResponseEntity<List<HashMap<String, Object>>> getReportFour() {
+    @GetMapping("/get-report-three")
+    public ResponseEntity<List<HashMap<String, Object>>> getReportThree() {
         String query = "SELECT gr.genre_name, title, max_rating FROM (SELECT genre_name, MAX(overall_rating) AS max_rating " +
                 "FROM movie m NATURAL JOIN movie_genre mg NATURAL JOIN genre g GROUP BY g.genre_name) a, movie mov NATURAL JOIN" +
                 "movie_genre mgr NATURAL JOIN genre gr WHERE mov.overall_rating = a.max_rating AND a.genre_name = gr.genre_name;";

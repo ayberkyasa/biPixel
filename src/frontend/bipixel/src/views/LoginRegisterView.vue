@@ -91,6 +91,7 @@
                           <v-text-field
                             id="birthDate"
                             label="Birth Date"
+                            hint="YYYY-MM-DD"
                             v-model="registeration.birthDate"
                             prepend-icon="mdi-id-card"
                             type="text"
@@ -161,7 +162,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-snackbar color="red darken-1" timeout="2000" v-model="snackbar">
+    <v-snackbar :color="color" timeout="2000" v-model="snackbar">
       {{ text }}
     </v-snackbar>
   </v-container>
@@ -173,6 +174,7 @@ export default {
     return {
       text: "",
       snackbar: false,
+      color: "",
       authentication: { email: "", password: "" },
       registeration: {
         email: "",
@@ -198,6 +200,7 @@ export default {
         this.$router.push("/profile");
       } catch (exception) {
         this.text = "Email or password is incorrect. Please try again!";
+        this.color = "red darken-1";
         this.snackbar = true;
       }
     },
@@ -205,14 +208,22 @@ export default {
       try {
         this.checkInputValidation();
         try {
-          await axiosInstance.post(URL.REGISTER, this.registeration);
+          const response = await axiosInstance.post(
+            URL.REGISTER,
+            this.registeration
+          );
           this.step--;
+          this.text = response.data.message;
+          this.color = "green darken-1";
+          this.snackbar = true;
         } catch (exception) {
           this.text = exception.response.data.message;
+          this.color = "red darken-1";
           this.snackbar = true;
         }
       } catch (exception) {
         this.text = exception;
+        this.color = "red darken-1";
         this.snackbar = true;
       }
     },

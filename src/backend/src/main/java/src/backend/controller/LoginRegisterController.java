@@ -75,7 +75,7 @@ public class LoginRegisterController {
                 "'new'" +
                 ");";
         connector.executeUpdate(customerQuery);
-
+        response.put("message", "Register was successfully done.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

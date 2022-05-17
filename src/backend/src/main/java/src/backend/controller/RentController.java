@@ -21,21 +21,21 @@ public class RentController {
 
     @GetMapping("/search-movie")
     public ResponseEntity<?> searchBy(@RequestParam("key") String searchKey,
-                                      @RequestParam("rate") String rate,
-                                      @RequestParam("price") String price,
+                                      @RequestParam("rate") String rateThreshold,
+                                      @RequestParam("price") String priceThreshold,
                                       @RequestParam("userId") Integer userId) {
 
         List<HashMap<String, Object>> movieList;
         HashMap<String, Object> result = new HashMap<>();
         float parsedRate;
         int parsedPrice;
-        if(!rate.equals("")) {
-            parsedRate= Float.parseFloat(rate);
+        if(!rateThreshold.equals("")) {
+            parsedRate= Float.parseFloat(rateThreshold);
         } else {
             parsedRate = 0;
         }
-        if(!price.equals("")) {
-            parsedPrice = Integer.parseInt(price);
+        if(!priceThreshold.equals("")) {
+            parsedPrice = Integer.parseInt(priceThreshold);
         } else {
             String query = "SELECT MAX(price) AS price FROM movie";
             parsedPrice = (int) connector.executeQuery(query).get(0).get("price");

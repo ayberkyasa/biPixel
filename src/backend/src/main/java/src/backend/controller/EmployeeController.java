@@ -27,7 +27,7 @@ public class EmployeeController {
                 "VALUES " +
                 "(" +
                 "'" + requestBody.get("title") + "'" + "," +
-                null + "," +
+                0 + "," +
                 requestBody.get("duration") + "," +
                 "'" + requestBody.get("production_year") + "'" + ","  +
                 "'" + requestBody.get("language_option") + "'" + "," +

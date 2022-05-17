@@ -21,19 +21,36 @@ public class RentController {
 
     @GetMapping("/search-movie")
     public ResponseEntity<?> searchBy(@RequestParam("key") String searchKey,
-                                                  @RequestParam("userId") Integer userId) {
+                                      @RequestParam("rate") String rate,
+                                      @RequestParam("price") String price,
+                                      @RequestParam("userId") Integer userId) {
 
         List<HashMap<String, Object>> movieList;
         HashMap<String, Object> result = new HashMap<>();
+        float parsedRate;
+        int parsedPrice;
+        if(!rate.equals("")) {
+            parsedRate= Float.parseFloat(rate);
+        } else {
+            parsedRate = 0;
+        }
+        if(!price.equals("")) {
+            parsedPrice = Integer.parseInt(price);
+        } else {
+            String query = "SELECT MAX(price) AS price FROM movie";
+            parsedPrice = (int) connector.executeQuery(query).get(0).get("price");
+        }
         if(!searchKey.equals("")){
             movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
                     " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
                     " WHERE movie.movie_id NOT IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +" AND withdrawn = false)" +
-                    " AND (title RLIKE '" + searchKey + "' OR actor_full_name RLIKE '" + searchKey + "' OR director_full_name RLIKE '" + searchKey + "')");
+                    " AND (title RLIKE '" + searchKey + "' OR actor_full_name RLIKE '" + searchKey + "' OR director_full_name RLIKE '" + searchKey + "')" +
+                    " AND price <= " + parsedPrice + " AND overall_rating >= " + parsedRate + ";");
         }else{
             movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
                     " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
-                    " WHERE movie.movie_id NOT IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +" AND withdrawn = false)");
+                    " WHERE movie.movie_id NOT IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +" AND withdrawn = false)" +
+                    " AND price <= " + parsedPrice + " AND overall_rating >= " + parsedRate + ";");
         }
 
         if (movieList.size() == 0) {

@@ -111,6 +111,11 @@ export default {
           icon: "mdi-account-edit",
           path: "/customer-control",
         },
+        {
+          title: "Inspect Report",
+          icon: "mdi-file-chart",
+          path: "/report",
+        },
       ],
     };
   },

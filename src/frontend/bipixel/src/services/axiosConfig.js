@@ -52,4 +52,8 @@ export const URL = {
     GET_MOVIE_HISTORY: "show-movie-history",
     GET_REVIEWS_AND_RATINGS: "get-reviews-and-ratings",
     GET_FEE: "calculate-fee",
+    GET_REPORT_ONE: "get-report-one",
+    GET_REPORT_TWO: "get-report-two",
+    GET_REPORT_THREE: "get-report-three",
+
 };

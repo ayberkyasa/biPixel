@@ -6,6 +6,7 @@
         v-model="search"
         label="Search by name"
         filled
+        @blur="getMovies"
         rounded
         dense
       ></v-text-field
@@ -31,6 +32,7 @@
           v-model="price"
           label="Enter a price"
           filled
+          @blur="getMovies"
           rounded
           dense
         ></v-text-field>
@@ -43,6 +45,7 @@
           label="Enter a rate between 1 and 10"
           filled
           rounded
+          @blur="getMovies"
           dense
         ></v-text-field>
       </v-col>
@@ -52,7 +55,6 @@
       :items="movies"
       item-key="email"
       class="elevation-1"
-      :search="search"
     >
       <template v-slot:[`item.details`]="{ item }">
         <v-btn
@@ -225,6 +227,7 @@ export default {
           text: "Title",
           align: "start",
           value: "title",
+          filterable: false,
           sortable: false,
         },
         {
@@ -232,6 +235,7 @@ export default {
           align: "start",
           value: "directors",
           sortable: false,
+          filterable: false,
         },
         {
           text: "Genre",
@@ -261,7 +265,7 @@ export default {
             if (this.rate === "") {
               return true;
             } else {
-              return value >= parseInt(this.rate);
+              return value >= parseFloat(this.rate);
             }
           },
         },
@@ -310,6 +314,23 @@ export default {
     },
   },
   methods: {
+    async getMovies() {
+      try {
+        const res = await axiosInstance.get(URL.SEARCH_MOVIE, {
+          params: {
+            key: this.search,
+            price: this.price,
+            rate: this.rate,
+            userId: this.$store.state.uid,
+          },
+        });
+
+        await this.getFavorites();
+        this.movies = res.data;
+      } catch (error) {
+        console.log(error.response);
+      }
+    },
     async rent(item) {
       if (this.$store.state.userType !== "Employee") {
         this.openRentDialog(item);
@@ -320,18 +341,7 @@ export default {
             userId: this.$store.state.uid,
           });
           console.log(res);
-          try {
-            const res = await axiosInstance.get(URL.SEARCH_MOVIE, {
-              params: {
-                key: this.search,
-                userId: this.$store.state.uid,
-              },
-            });
-            await this.getFavorites();
-            this.movies = res.data;
-          } catch (error) {
-            console.log(error.response);
-          }
+          await this.getMovies();
         } catch (error) {
           console.log(error);
         }
@@ -469,22 +479,9 @@ export default {
     },
   },
   async created() {
-    try {
-      const res = await axiosInstance.get(URL.SEARCH_MOVIE, {
-        params: {
-          key: this.search,
-          userId: this.$store.state.uid,
-        },
-      });
-
-      const genres = await axiosInstance.get(URL.GET_GENRES);
-      this.selectElements = genres.data;
-      console.log(this.selectElements);
-      await this.getFavorites();
-      this.movies = res.data;
-    } catch (error) {
-      console.log(error.response);
-    }
+    await this.getMovies();
+    const genres = await axiosInstance.get(URL.GET_GENRES);
+    this.selectElements = genres.data;
   },
 };
 </script>

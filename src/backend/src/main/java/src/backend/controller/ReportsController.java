@@ -47,7 +47,7 @@ public class ReportsController {
     @GetMapping("/get-report-three")
     public ResponseEntity<List<HashMap<String, Object>>> getReportThree() {
         String query = "SELECT gr.genre_name, title, max_rating FROM (SELECT genre_name, MAX(overall_rating) AS max_rating " +
-                "FROM movie m NATURAL JOIN movie_genre mg NATURAL JOIN genre g GROUP BY g.genre_name) a, movie mov NATURAL JOIN" +
+                "FROM movie m NATURAL JOIN movie_genre mg NATURAL JOIN genre g GROUP BY g.genre_name) a, movie mov NATURAL JOIN " +
                 "movie_genre mgr NATURAL JOIN genre gr WHERE mov.overall_rating = a.max_rating AND a.genre_name = gr.genre_name;";
         List<HashMap<String,Object>> result = connector.executeQuery(query);
         return new ResponseEntity<>(result, HttpStatus.OK);

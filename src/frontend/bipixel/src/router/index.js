@@ -11,6 +11,7 @@ import FavoriteListView from "../views/FavoriteListView.vue";
 import MovieControlView from "../views/MovieControlView.vue";
 import CustomerControlView from "../views/CustomerControlView.vue";
 import MovieRequestView from "../views/MovieRequestView.vue";
+import ReportView from "../views/ReportView";
 
 Vue.use(VueRouter);
 
@@ -65,6 +66,11 @@ const routes = [
   {
     path: "/request",
     component: MovieRequestView,
+    beforeEnter: isAuthenticated,
+  },
+  {
+    path: "/report",
+    component: ReportView,
     beforeEnter: isAuthenticated,
   },
 ];

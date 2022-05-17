@@ -341,7 +341,6 @@ export default {
   },
   methods: {
     checkReview(item) {
-      console.log(this.reviews)
       var check = true;
       for(let i = 0; i < this.reviews.length; i++){
         if(this.reviews[i].movie_id === item.movie_id){
@@ -354,15 +353,12 @@ export default {
       return check;
     },
     review(item) {
-      console.log(item);
       this.showedMovie = item;
     },
     async submit() {
       if ((this.comment !== "") & (this.comment.length <= 300)) {
-        console.log(this.rate);
         this.reviewDialog = false;
 
-        console.log(this.showedMovie);
         try {
           const res = await axiosInstance.post(URL.SEND_REVIEW, {
             movieId: this.showedMovie.movie_id,

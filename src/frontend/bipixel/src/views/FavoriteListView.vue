@@ -144,7 +144,6 @@ export default {
       }
     },
     showDetails(value) {
-      console.log(value);
       this.showedMovie = value;
       this.showActors();
     },

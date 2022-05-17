@@ -261,13 +261,6 @@ export default {
           align: "start",
           value: "overall_rating",
           sortable: false,
-          // filter: (value) => {
-          //   if (this.rate === "") {
-          //     return true;
-          //   } else {
-          //     return value >= parseFloat(this.rate);
-          //   }
-          // },
         },
         {
           text: "Year",
@@ -281,13 +274,6 @@ export default {
           align: "start",
           value: "price",
           sortable: false,
-          // filter: (value) => {
-          //   if (this.price === "") {
-          //     return true;
-          //   } else {
-          //     return value <= parseInt(this.price);
-          //   }
-          // },
         },
         {
           text: "Details",

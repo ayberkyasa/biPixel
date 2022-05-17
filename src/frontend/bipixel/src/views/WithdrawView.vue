@@ -385,7 +385,6 @@ export default {
               },
             });
             this.rentedMovies = res.data;
-            console.log(this.rentedMovies);
           } catch (error) {
             console.log(error.response);
           }
@@ -442,7 +441,6 @@ export default {
               },
             });
             this.rentedMovies = res.data;
-            console.log(this.rentedMovies);
           } catch (error) {
             console.log(error.response);
           }

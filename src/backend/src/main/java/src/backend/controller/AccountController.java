@@ -527,7 +527,6 @@ public class AccountController {
         HashMap<String, Object> result = new HashMap<>();
         try {
             connector.executeUpdate("INSERT INTO rating(user_id, movie_id, rating) VALUES(" + requestBody.get("userId") + ", " + requestBody.get("movieId") + ", " + requestBody.get("ratingScore") + ")");
-            connector.executeUpdate("UPDATE movie SET overall_rating = (SELECT avg(rating) FROM rating WHERE movie_id = " + requestBody.get("movieId") + ") WHERE movie_id = " + requestBody.get("movieId") + "");
             result.put("result", "The movie is rated.");
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {

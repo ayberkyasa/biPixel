@@ -324,7 +324,7 @@ export default {
             userId: this.$store.state.uid,
           },
         });
-        console.log(res.data)
+        console.log(res.data);
         await this.getFavorites();
         this.movies = res.data;
       } catch (error) {
@@ -341,6 +341,7 @@ export default {
             userId: this.$store.state.uid,
           });
           console.log(res);
+          this.snackbar = true;
           await this.getMovies();
         } catch (error) {
           console.log(error);
@@ -435,18 +436,10 @@ export default {
             userId: this.$store.state.uid,
           });
           console.log(res);
-          try {
-            const res = await axiosInstance.get(URL.SEARCH_MOVIE, {
-              params: {
-                key: this.search,
-                userId: this.$store.state.uid,
-              },
-            });
-            await this.getFavorites();
-            this.movies = res.data;
-          } catch (error) {
-            console.log(error.response);
-          }
+
+          await this.getFavorites();
+          await this.getMovies();
+
         } catch (error) {
           console.log(error);
         }

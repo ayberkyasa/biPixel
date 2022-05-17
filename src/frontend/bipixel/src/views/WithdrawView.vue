@@ -360,14 +360,13 @@ export default {
       }
     },
     async withdraw(item) {
-      console.log(item)
-      if (this.$store.state.userType !== "Employee") {
-        const res = await axiosInstance.get(URL.GET_FEE, {
-          params: {
-            rentId: item.rent_id
-          }
-        })
-        this.withdrawPrice = res.data;
+      const res = await axiosInstance.get(URL.GET_FEE, {
+        params: {
+          rentId: item.rent_id,
+        },
+      });
+      this.withdrawPrice = res.data;
+      if (this.$store.state.userType !== "Employee" && this.withdrawPrice !== 0) {
         this.payDialog = true;
       } else {
         try {

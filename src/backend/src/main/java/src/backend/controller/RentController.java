@@ -45,7 +45,7 @@ public class RentController {
                     " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
                     " WHERE movie.movie_id NOT IN (SELECT movie_id FROM rent_movie WHERE user_id = " + userId +" AND withdrawn = false)" +
                     " AND (title RLIKE '" + searchKey + "' OR actor_full_name RLIKE '" + searchKey + "' OR director_full_name RLIKE '" + searchKey + "')" +
-                    " AND price <= " + parsedPrice + " AND overall_rating >= " + parsedRate + ";");
+                    " AND (price BETWEEN 0 AND " + parsedPrice + ") AND (overall_rating BETWEEN " + parsedRate + " AND 10);");
         }else{
             movieList = connector.executeQuery("SELECT DISTINCT movie.movie_id" +
                     " FROM (movie NATURAL JOIN act NATURAL JOIN actor NATURAL JOIN direct NATURAL JOIN director NATURAL JOIN movie_genre NATURAL JOIN genre) LEFT JOIN rent_movie ON rent_movie.movie_id = movie.movie_id" +
